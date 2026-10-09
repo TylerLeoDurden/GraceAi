@@ -58,7 +58,7 @@ Clinical Boundaries & Safety:
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, mode = "chef", history = [] } = body;
+    const { message, mode = "chef", history = [], timeContext } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -107,10 +107,14 @@ export async function POST(req: NextRequest) {
 
     const groq = new Groq({ apiKey });
 
+    const timeContextNote = timeContext
+      ? `\n\nREAL-WORLD CALENDAR CONTEXT: Today is ${timeContext.dayOfWeek}, ${timeContext.formattedDate}. Current local time: ${timeContext.timeString}. Active meal window: ${timeContext.activeMealSlot}. If the user asks for suggestions or daily guidance, naturally tailor recommendations to this time of day.`
+      : "";
+
     const systemPrompt =
-      mode === "health"
+      (mode === "health"
         ? HEALTH_GUIDE_SYSTEM_PROMPT
-        : CHEF_GRACE_SYSTEM_PROMPT;
+        : CHEF_GRACE_SYSTEM_PROMPT) + timeContextNote;
 
     // Build chat message history (limiting to last 8 messages for optimal context)
     const formattedHistory = Array.isArray(history)

@@ -16,6 +16,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { FormattedMessage } from "./formatted-message";
+import { getRealTimeStatus } from "@/lib/date-utils";
 
 export function FloatingGrace() {
   const pathname = usePathname();
@@ -65,6 +66,7 @@ export function FloatingGrace() {
             role: m.role === "assistant" ? "grace" : "user",
             content: m.text,
           })),
+          timeContext: getRealTimeStatus(new Date()),
         }),
       });
 

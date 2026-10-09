@@ -2,25 +2,29 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTheme } from "./theme-provider";
+import { LiveClockWidget } from "./live-clock-widget";
+import { useAuth } from "@/lib/auth-context";
+import { signOut } from "@/lib/firebase";
 import {
   Sun,
   Moon,
   Menu,
   X,
   HeartPulse,
-  UtensilsCrossed,
   CalendarDays,
   Sparkles,
   ArrowRight,
   ShieldAlert,
+  Stethoscope,
+  LogOut,
 } from "lucide-react";
 
 const NAV_LINKS = [
   { name: "Overview", href: "/" },
   { name: "Meal Planner", href: "/planner", icon: CalendarDays },
-  { name: "World Kitchen", href: "/recipes", icon: UtensilsCrossed },
+  { name: "Health Care", href: "/care", icon: Stethoscope },
   { name: "Daily Rhythm", href: "/tracker", icon: HeartPulse },
   { name: "Chef Grace", href: "/grace", icon: Sparkles },
 ];
@@ -28,13 +32,35 @@ const NAV_LINKS = [
 export function Navbar() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    }
+    if (profileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [profileMenuOpen]);
+
+  const handleSignOut = async () => {
+    setProfileMenuOpen(false);
+    await signOut();
+  };
 
   return (
     <>
       <header className="sticky top-0 z-40 w-full glass-panel border-b transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-[1760px] w-full mx-auto px-4 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl bg-[var(--primary)] text-white flex items-center justify-center font-serif text-lg font-bold shadow-sm transition-transform duration-200 group-hover:scale-105">
@@ -45,7 +71,7 @@ export function Navbar() {
                 grace<span className="text-[var(--primary)] font-normal italic">ai</span>
               </span>
               <span className="text-[10px] tracking-widest uppercase text-[var(--text-muted)] font-medium hidden sm:inline-block">
-                Culinary Wellness & Nourishment
+                Culinary Wellness &amp; Nourishment
               </span>
             </div>
           </Link>
@@ -71,7 +97,10 @@ export function Navbar() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Live Clock & Rhythm Widget */}
+            <LiveClockWidget />
+
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
@@ -90,14 +119,94 @@ export function Navbar() {
               <span>Helpline</span>
             </button>
 
-            {/* Get Started CTA */}
-            <Link
-              href="/onboarding"
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium transition-all shadow-sm active:scale-95"
-            >
-              <span>Build My Menu</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            {/* ─── AUTH AREA ─────────────────────────────────────────── */}
+            {user ? (
+              /* Signed-in: avatar + dropdown */
+              <div ref={profileRef} className="relative hidden lg:block">
+                <button
+                  id="user-avatar-btn"
+                  onClick={() => setProfileMenuOpen((p) => !p)}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-2xl border border-[var(--border)] hover:bg-[var(--surface-elevated)] transition-colors"
+                >
+                  {user.photoURL ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || "You"}
+                      className="w-7 h-7 rounded-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center">
+                      {(user.displayName || user.email || "U")[0].toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-xs font-medium text-[var(--text)] max-w-[100px] truncate hidden xl:block">
+                    {user.displayName?.split(" ")[0] || "My Account"}
+                  </span>
+                </button>
+
+                {/* Dropdown */}
+                {profileMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-52 bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                    <div className="px-4 py-3 border-b border-[var(--border)]">
+                      <p className="text-xs font-semibold text-[var(--text)] truncate">
+                        {user.displayName || "Signed In"}
+                      </p>
+                      <p className="text-[10px] text-[var(--text-muted)] truncate mt-0.5">
+                        {user.email}
+                      </p>
+                    </div>
+                    <div className="p-1.5 space-y-0.5">
+                      <Link
+                        href="/planner"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-[var(--text)] hover:bg-[var(--surface-elevated)] transition-colors"
+                      >
+                        <CalendarDays className="w-3.5 h-3.5 text-[var(--primary)]" />
+                        My Meal Planner
+                      </Link>
+                      <Link
+                        href="/tracker"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-[var(--text)] hover:bg-[var(--surface-elevated)] transition-colors"
+                      >
+                        <HeartPulse className="w-3.5 h-3.5 text-[var(--accent)]" />
+                        Daily Tracker
+                      </Link>
+                    </div>
+                    <div className="p-1.5 border-t border-[var(--border)]">
+                      <button
+                        id="sign-out-btn"
+                        onClick={handleSignOut}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Signed-out: Sign In link + Get Started CTA */
+              <>
+                <Link
+                  href="/login"
+                  className="hidden lg:inline-flex items-center text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)] px-3 py-2 rounded-xl hover:bg-[var(--surface-elevated)] transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/onboarding"
+                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium transition-all shadow-sm active:scale-95"
+                >
+                  <span>Build My Menu</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </>
+            )}
+            {/* ─────────────────────────────────────────────────────────── */}
 
             {/* Mobile Hamburger */}
             <button
@@ -132,14 +241,61 @@ export function Navbar() {
             })}
 
             <div className="pt-3 border-t border-[var(--border)] flex flex-col gap-2">
-              <Link
-                href="/onboarding"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--accent)] text-white font-medium text-center"
-              >
-                <span>Build My Menu</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              {user ? (
+                <div className="p-3 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] space-y-3">
+                  <div className="flex items-center gap-3">
+                    {user.photoURL ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={user.photoURL}
+                        alt={user.displayName || "You"}
+                        className="w-10 h-10 rounded-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-[var(--primary)] text-white text-sm font-bold flex items-center justify-center">
+                        {(user.displayName || user.email || "U")[0].toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-[var(--text)] truncate">
+                        {user.displayName || "Account"}
+                      </p>
+                      <p className="text-xs text-[var(--text-muted)] truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleSignOut();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[var(--danger)]/30 text-[var(--danger)] hover:bg-[var(--danger)]/10 text-xs font-semibold transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-2.5 text-center text-sm font-semibold text-[var(--text)] border border-[var(--border)] rounded-xl hover:bg-[var(--surface-elevated)] transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/onboarding"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--accent)] text-white font-medium text-center"
+                  >
+                    <span>Build My Menu</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </>
+              )}
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);

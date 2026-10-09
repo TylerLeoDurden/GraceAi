@@ -17,9 +17,11 @@ import {
   Heart,
   Lock,
   Compass,
+  Stethoscope,
 } from "lucide-react";
 import { calculateNutritionPlan, UserStats, ActivityLevel, HealthGoal } from "@/lib/nutrition";
 import { FormattedMessage } from "@/components/formatted-message";
+import { useRealTime } from "@/lib/use-real-time";
 
 const CUISINE_CATEGORIES = [
   { id: "all", label: "All Traditions" },
@@ -128,7 +130,7 @@ const FAQS = [
 ];
 
 export default function LandingPage() {
-  const [heroWater, setHeroWater] = useState(1250);
+  const { status, mounted } = useRealTime(1000);
 
   // Live Chat state
   const [chatMode, setChatMode] = useState<"chef" | "health">("chef");
@@ -216,13 +218,27 @@ export default function LandingPage() {
       {/* =========================================================================
           HERO SECTION — Editorial & Warm
           ========================================================================= */}
-      <section className="pt-12 pb-20 md:pt-20 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <section className="pt-12 pb-16 md:pt-16 md:pb-24 px-4 sm:px-8 lg:px-12 xl:px-14 max-w-[1760px] mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Editorial Copy */}
           <div className="lg:col-span-7 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
-              <span>A different kind of food & wellness guide</span>
-            </div>
+            {/* Real-time date & greeting badge */}
+            {mounted && status ? (
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--primary-light)] border border-[var(--primary-border)] text-xs text-[var(--text)]">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--primary)] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--primary)]"></span>
+                </span>
+                <span className="font-semibold text-[var(--primary)]">{status.greeting}!</span>
+                <span className="text-[var(--text-muted)] font-mono">
+                  {status.formattedDate} • {status.timeString}
+                </span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
+                <span>A different kind of food & wellness guide</span>
+              </div>
+            )}
 
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[var(--text)] leading-[1.12]">
               Food you actually want to eat, balanced for the{" "}
@@ -259,8 +275,8 @@ export default function LandingPage() {
                 <span>Never &lt;1,200 kcal</span>
               </div>
               <div>
-                <span className="font-medium text-[var(--text)] block">World Kitchens</span>
-                <span>Regional & Global</span>
+                <span className="font-medium text-[var(--text)] block">Health Care Guide</span>
+                <span>Fever, Allergies & Skin</span>
               </div>
               <div>
                 <span className="font-medium text-[var(--text)] block">Zero Cost</span>
@@ -279,14 +295,21 @@ export default function LandingPage() {
               <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
                 <div>
                   <span className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">
-                    Today’s Nourishment
+                    {mounted && status ? `${status.dayOfWeek}’s Active Rhythm` : "Today’s Nourishment"}
                   </span>
                   <h3 className="font-serif text-lg font-semibold text-[var(--text)]">
-                    South Indian Moong & Brown Rice Bowl
+                    {mounted && status?.activeMealSlot === "Breakfast"
+                      ? "South Indian Moong Dal Idli & Chutney"
+                      : mounted && status?.activeMealSlot === "Lunch"
+                      ? "Kerala Moong & Brown Rice Bowl"
+                      : mounted && status?.activeMealSlot === "Snack"
+                      ? "Roasted Makhana & Mint Chai"
+                      : "Mediterranean Roasted Vegetable Bowl"}
                   </h3>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--primary-light)] text-[var(--primary)] font-medium">
-                  Lunch
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--primary-light)] text-[var(--primary)] font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+                  <span>{mounted && status ? status.activeMealSlot : "Lunch"}</span>
                 </span>
               </div>
 
@@ -325,25 +348,85 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Hydration quick tap */}
-              <div className="p-3.5 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[var(--primary)] text-white flex items-center justify-center">
-                    <Droplet className="w-4 h-4 fill-white" />
+              {/* Daily Nourishment Rhythm Card */}
+              <div className="p-4 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[var(--primary)] text-white flex items-center justify-center">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-[var(--text)]">Daily Nourishment Rhythm</div>
+                      <div className="text-[11px] text-[var(--text-muted)]">Lunch window: 12:30 PM – 2:30 PM</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-xs font-semibold text-[var(--text)]">Daily Hydration</div>
-                    <div className="text-[11px] text-[var(--text-muted)]">{heroWater} ml of 2,500 ml target</div>
+                  <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[var(--success)]/15 text-[var(--success)] font-medium">
+                    Logged with care
+                  </span>
+                </div>
+
+                {/* Flexible logging window & mindful actions */}
+                <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[var(--border)]">
+                  <span className="text-[var(--text-muted)]">
+                    Flexible log window: 5h remaining
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-[var(--primary)] text-white text-[10px] font-medium">
+                      I Ate This
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-lg bg-[var(--surface)] text-[var(--text-muted)] text-[10px] border border-[var(--border)]">
+                      Ate Something Else
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-lg bg-[var(--surface)] text-[var(--text-muted)] text-[10px] border border-[var(--border)]">
+                      Skipped
+                    </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => setHeroWater((p) => Math.min(3000, p + 250))}
-                  className="px-3 py-1.5 rounded-xl border border-[var(--primary)] text-[var(--primary)] text-xs font-semibold hover:bg-[var(--primary)] hover:text-white transition-colors"
-                >
-                  +250 ml
-                </button>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          REAL-WORLD WEEKLY PROCESS STRIP
+          ========================================================================= */}
+      <section className="bg-[var(--surface-elevated)] border-y border-[var(--border)] py-4 px-4 sm:px-8 lg:px-12 xl:px-14">
+        <div className="max-w-[1760px] w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[var(--accent)] text-white flex items-center justify-center font-bold shadow-xs">
+              <CalendarDays className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-semibold text-sm text-[var(--text)] flex items-center gap-2">
+                <span>Real-World Weekly Process</span>
+                {mounted && status && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--primary)]/15 text-[var(--primary)] font-semibold font-mono">
+                    {status.dayOfWeek} • {status.timeString}
+                  </span>
+                )}
+              </div>
+              <div className="text-[var(--text-muted)]">
+                Your meals and mindful vitals automatically roll day-by-day throughout the calendar week.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 w-full md:w-auto justify-end">
+            <Link
+              href="/planner"
+              className="px-4 py-2 rounded-xl bg-[var(--primary)] text-white font-semibold hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-xs text-xs"
+            >
+              <CalendarDays className="w-3.5 h-3.5" />
+              <span>Today&apos;s Meal Plan</span>
+            </Link>
+            <Link
+              href="/tracker"
+              className="px-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] font-semibold hover:bg-[var(--surface-elevated)] transition-colors flex items-center gap-1.5 text-xs"
+            >
+              <HeartPulse className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <span>7-Day Tracker</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -352,9 +435,9 @@ export default function LandingPage() {
           FOUR PILLARS — Human & Practical
           ========================================================================= */}
       <section className="py-20 bg-[var(--surface-elevated)] border-y border-[var(--border)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="max-w-[1760px] w-full mx-auto px-4 sm:px-8 lg:px-12 xl:px-14 space-y-12">
           <div className="max-w-2xl space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+            <span className="text-xs font-serif italic text-[var(--primary)] tracking-wide">
               Core Principles
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[var(--text)]">
@@ -369,40 +452,40 @@ export default function LandingPage() {
             <div className="editorial-card rounded-2xl p-6 space-y-3">
               <span className="font-serif text-2xl text-[var(--primary)] font-normal">01</span>
               <h3 className="font-serif text-lg font-semibold text-[var(--text)]">
-                Personalized Menu Planner
+                Mindful Kitchen Menus
               </h3>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Calculates your metabolic requirements via Mifflin-St Jeor, enforces biological calorie safety floors, and compiles your weekly grocery list grouped by market aisle.
+                Menus tuned to your metabolic requirements via Mifflin-St Jeor, strictly honoring biological calorie safety floors, with a market grocery list grouped by market aisle.
               </p>
             </div>
 
             <div className="editorial-card rounded-2xl p-6 space-y-3">
               <span className="font-serif text-2xl text-[var(--accent)] font-normal">02</span>
               <h3 className="font-serif text-lg font-semibold text-[var(--text)]">
-                Gentle Daily Rhythm Tracker
+                Honest Daily Rhythm
               </h3>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Track what matters without obsessive counting: water intake, sleep quality, daily movement, and mood, paired with a transparent 0–100 Vitality score.
+                Record meals when you actually eat them. No shame or neurotic calorie counting—just a flexible rhythm with honest logging that fits your real schedule.
               </p>
             </div>
 
             <div className="editorial-card rounded-2xl p-6 space-y-3">
               <span className="font-serif text-2xl text-[var(--primary)] font-normal">03</span>
               <h3 className="font-serif text-lg font-semibold text-[var(--text)]">
-                Authentic World Kitchen
+                Thoughtful Health Guardrails
               </h3>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Deep roots in Indian regional cooking (Tamil, Kerala, Punjab, Bengal, Gujarat) alongside Mediterranean and Asian traditions, complete with serving scalers and step-by-step cooking steps.
+                Subtle adjustments to keep you energized. Daily reflections that explain how food, rest, and hydration work together for your body. Full user undo anytime.
               </p>
             </div>
 
             <div className="editorial-card rounded-2xl p-6 space-y-3">
               <span className="font-serif text-2xl text-[var(--accent)] font-normal">04</span>
               <h3 className="font-serif text-lg font-semibold text-[var(--text)]">
-                Chef Grace Concierge
+                Your Dedicated Home Companion
               </h3>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Cook with whatever you have in your fridge. Grace formats recipes into clean, bulleted ingredients and numbered steps, backed by medical emergency interceptors.
+                Chef Grace crafts point-by-point recipes from your fridge ingredients, while our Health Care guide offers evidence-based remedies whenever you feel unwell.
               </p>
             </div>
           </div>
@@ -412,7 +495,7 @@ export default function LandingPage() {
       {/* =========================================================================
           INTERACTIVE CHEF GRACE DEMO — Point-by-point
           ========================================================================= */}
-      <section id="kitchen-guide" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <section id="kitchen-guide" className="py-20 px-4 sm:px-8 lg:px-12 xl:px-14 max-w-[1760px] mx-auto w-full">
         <div className="max-w-2xl mx-auto text-center space-y-3 mb-10">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
             Try It Now
@@ -541,10 +624,10 @@ export default function LandingPage() {
                   Hydration formula
                 </button>
                 <button
-                  onClick={() => handleSimulateChat("I have sudden chest pain and trouble breathing")}
+                  onClick={() => handleSimulateChat("Feeling very dizzy or fatigued after skipping dinner")}
                   className="text-xs px-3 py-1 rounded-full bg-[var(--danger)]/15 border border-[var(--danger)]/30 text-[var(--danger)] transition-colors whitespace-nowrap"
                 >
-                  Test SOS interceptor
+                  Feeling faint & fatigued
                 </button>
               </>
             )}
@@ -576,8 +659,8 @@ export default function LandingPage() {
       {/* =========================================================================
           NUTRITION TARGET CALCULATOR — Clean & Grounded
           ========================================================================= */}
-      <section className="py-20 bg-[var(--surface-elevated)] border-y border-[var(--border)] px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto space-y-12">
+      <section className="py-20 bg-[var(--surface-elevated)] border-y border-[var(--border)] px-4 sm:px-8 lg:px-12 xl:px-14">
+        <div className="max-w-[1760px] w-full mx-auto space-y-12">
           <div className="max-w-2xl space-y-2">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
               Metabolic Precision
@@ -764,12 +847,50 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
+          HEALTH CARE & HOME REMEDIES FEATURE SECTION
+          ========================================================================= */}
+      <section className="py-12 px-4 sm:px-8 lg:px-12 xl:px-14 max-w-[1760px] mx-auto w-full">
+        <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-[var(--surface-elevated)] via-[var(--surface)] to-[var(--surface-elevated)] border border-[var(--border)] shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="space-y-4 max-w-2xl">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent)]/10 px-3 py-1 rounded-full">
+              <Stethoscope className="w-4 h-4" />
+              <span>Dedicated Care Guide • Common Illnesses, Allergies & Skin Care</span>
+            </div>
+            <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-[var(--text)]">
+              Health Care & Home Remedies Center
+            </h2>
+            <p className="text-sm text-[var(--text-muted)] leading-relaxed">
+              Explore evidence-based recovery protocols, targeted nutrition, and first-line home treatments for common viral fever, cold & cough, dust/pollen allergies, hair fall solutions, and skin barrier health.
+            </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <span className="px-3 py-1 rounded-xl text-xs bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-medium">🌡️ Viral Fever & Sponging</span>
+              <span className="px-3 py-1 rounded-xl text-xs bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-medium">🍵 Cold & Saline Gargles</span>
+              <span className="px-3 py-1 rounded-xl text-xs bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-medium">🌿 Dust & Pollen Allergy</span>
+              <span className="px-3 py-1 rounded-xl text-xs bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-medium">✨ Hair Fall & Scalp Care</span>
+              <span className="px-3 py-1 rounded-xl text-xs bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-medium">🧴 Acne & Barrier Repair</span>
+            </div>
+          </div>
+
+          <div className="shrink-0 flex flex-col sm:flex-row lg:flex-col gap-3">
+            <Link
+              href="/care"
+              className="px-7 py-4 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-all"
+            >
+              <Stethoscope className="w-4 h-4" />
+              <span>Explore Health Care Protocols</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
           WORLD CUISINES ARCHIVE — Editorial Cookbook
           ========================================================================= */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-10">
+      <section className="py-20 px-4 sm:px-8 lg:px-12 xl:px-14 max-w-[1760px] mx-auto w-full space-y-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-2 max-w-xl">
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+            <span className="text-xs font-serif italic text-[var(--primary)] tracking-wide">
               Curated Recipes
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[var(--text)]">
@@ -807,7 +928,7 @@ export default function LandingPage() {
         </div>
 
         {/* Recipe Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredRecipes.map((recipe) => (
             <div
               key={recipe.id}
@@ -855,10 +976,10 @@ export default function LandingPage() {
       {/* =========================================================================
           HUMAN STORIES — Authentic Kitchen Moments
           ========================================================================= */}
-      <section className="py-20 bg-[var(--surface-elevated)] border-t border-[var(--border)] px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section className="py-20 bg-[var(--surface-elevated)] border-t border-[var(--border)] px-4 sm:px-8 lg:px-12 xl:px-14">
+        <div className="max-w-[1760px] w-full mx-auto space-y-12">
           <div className="max-w-2xl space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+            <span className="text-xs font-serif italic text-[var(--primary)] tracking-wide">
               Kitchen Notes
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[var(--text)]">
@@ -903,9 +1024,9 @@ export default function LandingPage() {
       {/* =========================================================================
           FAQ ACCORDION
           ========================================================================= */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-10">
+      <section className="py-20 px-4 sm:px-8 lg:px-12 xl:px-14 max-w-[1760px] mx-auto w-full space-y-10">
         <div className="text-center space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+          <span className="text-xs font-serif italic text-[var(--primary)] tracking-wide">
             Questions & Answers
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[var(--text)]">
@@ -913,7 +1034,7 @@ export default function LandingPage() {
           </h2>
         </div>
 
-        <div className="space-y-3">
+        <div className="max-w-4xl mx-auto space-y-3">
           {FAQS.map((faq, index) => {
             const isOpen = openFaq === index;
             return (
@@ -946,7 +1067,7 @@ export default function LandingPage() {
       {/* =========================================================================
           FINAL INVITATION
           ========================================================================= */}
-      <section className="py-20 bg-[var(--surface-elevated)] border-t border-[var(--border)] px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-20 bg-[var(--surface-elevated)] border-t border-[var(--border)] px-4 sm:px-8 lg:px-12 xl:px-14 text-center">
         <div className="max-w-2xl mx-auto space-y-5">
           <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[var(--text)]">
             Begin your weekly culinary plan today.

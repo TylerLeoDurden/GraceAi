@@ -2,41 +2,43 @@
 
 @layer base {
   :root {
-    --primary: #476A58;
-    --primary-hover: #3B5849;
-    --primary-light: #EEF3F0;
-    --primary-border: #BCD0C5;
-    --background: #FAF7F2;
-    --surface: #FFFFFF;
-    --surface-elevated: #F3ECE1;
-    --border: #E6DFD5;
-    --accent: #C86641;
-    --accent-hover: #B55835;
-    --accent-light: #FBF0EB;
-    --text: #1C1917;
-    --text-muted: #736B63;
-    --success: #3D8B5E;
-    --warning: #D98E32;
-    --danger: #C24A42;
+    /* Humanized Organic Linen & Warm Botanical Palette */
+    --primary: #2F5A44;            /* Rich Laurel & Rosemary Botanical Green */
+    --primary-hover: #244836;
+    --primary-light: #EDF4EF;      /* Delicate Morning Matcha */
+    --primary-border: #BDD3C6;
+    --background: #FBF9F5;         /* Warm Unbleached Linen / Japanese Washi */
+    --surface: #FFFFFF;            /* Warm Porcelain */
+    --surface-elevated: #F2ECE1;   /* Toasted Oat / Steamed Bisque */
+    --border: #E5DDD1;             /* Delicate Hand-spun Linen Thread */
+    --accent: #BC5735;             /* Sun-baked Terracotta & Ceylon Cinnamon */
+    --accent-hover: #A74828;
+    --accent-light: #FAF1EB;       /* Roasted Almond Cream */
+    --text: #211E1B;               /* Deep Roasted Espresso */
+    --text-muted: #746C64;         /* Earthy Pebble Taupe */
+    --success: #337B52;            /* Garden Thyme */
+    --warning: #C57822;            /* Golden Saffron & Turmeric */
+    --danger: #B64237;             /* Wild Madder / Dried Hibiscus */
   }
 
   .dark {
-    --primary: #8AB89F;
-    --primary-hover: #78A68D;
-    --primary-light: #18231E;
-    --primary-border: #283931;
-    --background: #131716;
-    --surface: #1B211F;
-    --surface-elevated: #232B28;
-    --border: #2B3532;
-    --accent: #DE825E;
+    /* Nocturnal Botanical Peat & Warm Ember Palette */
+    --primary: #88BC9E;            /* Luminous Eucalyptus Sage */
+    --primary-hover: #9BC8AF;
+    --primary-light: #18241E;
+    --primary-border: #2B3D34;
+    --background: #141716;         /* Serene Nocturnal Peat */
+    --surface: #1C211E;            /* Tactile Mineral Stone */
+    --surface-elevated: #242B27;   /* Obsidian Shelf */
+    --border: #2C3631;             /* Soft Dark Slate Rim */
+    --accent: #DF8360;             /* Terracotta Embers */
     --accent-hover: #E89574;
-    --accent-light: #2D1D17;
-    --text: #F5F2EB;
-    --text-muted: #9EABA5;
-    --success: #52B57B;
-    --warning: #F5AD49;
-    --danger: #DF5D55;
+    --accent-light: #2A1D17;
+    --text: #F4F0E8;               /* Unbleached Cotton Linen */
+    --text-muted: #9EA8A1;         /* Dusted Lichen Taupe */
+    --success: #56BC80;
+    --warning: #EEA442;
+    --danger: #DE5F57;
   }
 
   * {
@@ -84,27 +86,28 @@
 .editorial-card {
   background-color: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 24px -4px rgba(28, 25, 23, 0.05);
+  box-shadow: 0 4px 20px -2px rgba(45, 38, 30, 0.04), 0 1px 3px rgba(45, 38, 30, 0.02);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .dark .editorial-card {
   background-color: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.45);
 }
 
 /* Glassmorphism navigation */
 .glass-panel {
-  background: rgba(250, 247, 242, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(251, 249, 245, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
 }
 
 .dark .glass-panel {
-  background: rgba(19, 23, 22, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(20, 23, 22, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
 }
 

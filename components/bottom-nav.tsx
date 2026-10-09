@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   CalendarDays,
-  UtensilsCrossed,
+  Stethoscope,
   HeartPulse,
   Sparkles,
 } from "lucide-react";
@@ -13,7 +13,7 @@ import {
 const TABS = [
   { name: "Home", href: "/", icon: Home },
   { name: "Plan", href: "/planner", icon: CalendarDays },
-  { name: "Recipes", href: "/recipes", icon: UtensilsCrossed },
+  { name: "Care", href: "/care", icon: Stethoscope },
   { name: "Track", href: "/tracker", icon: HeartPulse },
   { name: "Grace", href: "/grace", icon: Sparkles, isAi: true },
 ];

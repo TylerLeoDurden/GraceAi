@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/lib/auth-context";
 import { Navbar } from "@/components/navbar";
 import { BottomNav } from "@/components/bottom-nav";
 import { FloatingGrace } from "@/components/floating-grace";
@@ -51,11 +52,13 @@ export default function RootLayout({
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--text)] selection:bg-[var(--primary)]/20 selection:text-[var(--text)] pb-16 md:pb-0">
         <ThemeProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <FloatingGrace />
-          <BottomNav />
+          <AuthProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <FloatingGrace />
+            <BottomNav />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

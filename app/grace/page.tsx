@@ -18,6 +18,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { FormattedMessage } from "@/components/formatted-message";
+import { useRealTime } from "@/lib/use-real-time";
+import { getRealTimeStatus } from "@/lib/date-utils";
 
 interface Message {
   id: string;
@@ -30,6 +32,7 @@ interface Message {
 }
 
 export default function GraceChatPage() {
+  const { status, mounted } = useRealTime(1000);
   const [mode, setMode] = useState<"chef" | "health">("chef");
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -84,6 +87,7 @@ export default function GraceChatPage() {
           message: userText,
           mode,
           history: historyContext,
+          timeContext: getRealTimeStatus(new Date()),
         }),
       });
 
@@ -138,7 +142,7 @@ export default function GraceChatPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 flex flex-col h-[calc(100vh-5rem)]">
+    <div className="max-w-[1500px] w-full mx-auto px-4 sm:px-8 lg:px-12 py-8 flex flex-col h-[calc(100vh-5rem)]">
       {/* Chat Header */}
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-4 shadow-sm mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -153,9 +157,21 @@ export default function GraceChatPage() {
                 {mode === "chef" ? "Chef Mode" : "Health Guide Mode"}
               </span>
             </h1>
-            <p className="text-xs text-[var(--text-muted)]">
-              Powered by Groq High-Speed LLM • Safe & Privacy-Preserving
-            </p>
+            <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-xs text-[var(--text-muted)]">
+              <span>Groq LLM</span>
+              {mounted && status && (
+                <>
+                  <span>•</span>
+                  <span className="font-mono text-[var(--primary)] font-medium">
+                    {status.dayOfWeekShort}, {status.timeString}
+                  </span>
+                  <span>•</span>
+                  <span className="px-1.5 py-0.2 rounded-md bg-[var(--surface-elevated)] border border-[var(--border)] text-[10px] text-[var(--text)]">
+                    {status.activeMealSlot} Window
+                  </span>
+                </>
+              )}
+            </div>
           </div>
         </div>
 

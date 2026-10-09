@@ -8,8 +8,8 @@ export function Footer() {
   return (
     <footer className="w-full border-t border-[var(--border)] bg-[var(--surface)] text-[var(--text)] transition-colors duration-200 mt-20">
       {/* Medical Disclaimer Banner */}
-      <div className="bg-[var(--surface-elevated)] border-b border-[var(--border)] py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-[var(--text-muted)]">
+      <div className="bg-[var(--surface-elevated)] border-b border-[var(--border)] py-4 px-4 sm:px-8 lg:px-12">
+        <div className="max-w-[1760px] w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-[var(--text-muted)]">
           <div className="flex items-center gap-2 text-center md:text-left">
             <Shield className="w-4 h-4 text-[var(--primary)] shrink-0" />
             <p>
@@ -29,7 +29,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div className="max-w-[1760px] w-full mx-auto px-4 sm:px-8 lg:px-12 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand Col */}
           <div className="space-y-4 md:col-span-1">
@@ -63,8 +63,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/recipes" className="hover:text-[var(--text)] transition-colors">
-                  Global Recipe Library
+                <Link href="/care" className="hover:text-[var(--text)] transition-colors">
+                  Health Care & Home Remedies
                 </Link>
               </li>
               <li>
