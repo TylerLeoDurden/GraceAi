@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --primary: #476A58;
+    --primary-hover: #3B5849;
+    --primary-light: #EEF3F0;
+    --primary-border: #BCD0C5;
+    --background: #FAF7F2;
+    --surface: #FFFFFF;
+    --surface-elevated: #F3ECE1;
+    --border: #E6DFD5;
+    --accent: #C86641;
+    --accent-hover: #B55835;
+    --accent-light: #FBF0EB;
+    --text: #1C1917;
+    --text-muted: #736B63;
+    --success: #3D8B5E;
+    --warning: #D98E32;
+    --danger: #C24A42;
+  }
+
+  .dark {
+    --primary: #8AB89F;
+    --primary-hover: #78A68D;
+    --primary-light: #18231E;
+    --primary-border: #283931;
+    --background: #131716;
+    --surface: #1B211F;
+    --surface-elevated: #232B28;
+    --border: #2B3532;
+    --accent: #DE825E;
+    --accent-hover: #E89574;
+    --accent-light: #2D1D17;
+    --text: #F5F2EB;
+    --text-muted: #9EABA5;
+    --success: #52B57B;
+    --warning: #F5AD49;
+    --danger: #DF5D55;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, .font-serif {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-feature-settings: "liga" 1, "kern" 1;
+  }
+}
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-primary-border: var(--primary-border);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Crafted card styling */
+.editorial-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 24px -4px rgba(28, 25, 23, 0.05);
+}
+
+.dark .editorial-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.35);
+}
+
+/* Glassmorphism navigation */
+.glass-panel {
+  background: rgba(250, 247, 242, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+}
+
+.dark .glass-panel {
+  background: rgba(19, 23, 22, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
