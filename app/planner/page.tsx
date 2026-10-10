@@ -23,6 +23,7 @@ import {
 import { getWeekDays, getRealTimeStatus, WeekInfo, DayInfo, DEFAULT_WEEK_INFO } from "@/lib/date-utils";
 import { useRealTime } from "@/lib/use-real-time";
 import { ManualMealModal } from "@/components/manual-meal-modal";
+import { GroceryListModal } from "@/components/grocery-list-modal";
 import { getStoredMeals, saveStoredMeals, computeDeterministicReport, saveStoredReport } from "@/lib/meal-schedule";
 
 interface MealSlot {
@@ -81,49 +82,6 @@ const INITIAL_DAYS: Record<string, MealSlot[]> = {
   ],
 };
 
-const SAMPLE_GROCERY_AISLES = [
-  {
-    aisle: "Fresh Produce & Greens",
-    items: [
-      { name: "Baby Spinach (Palak)", qty: "500g", checked: false },
-      { name: "Fresh Coriander & Mint", qty: "2 bunches", checked: false },
-      { name: "Tomatoes (Country / Roma)", qty: "1 kg", checked: true },
-      { name: "Curry Leaves & Green Chillies", qty: "100g", checked: true },
-      { name: "Ginger & Garlic", qty: "250g", checked: false },
-      { name: "Cucumber & Carrots", qty: "1 kg", checked: false },
-      { name: "Bell Peppers (Mixed)", qty: "3 pcs", checked: false },
-    ],
-  },
-  {
-    aisle: "Grains, Lentils & Pulses",
-    items: [
-      { name: "Yellow Moong Dal", qty: "1 kg", checked: false },
-      { name: "Unpolished Brown Rice", qty: "2 kg", checked: true },
-      { name: "Whole Red Kidney Beans (Rajma)", qty: "500g", checked: false },
-      { name: "Quinoa or Steel Cut Oats", qty: "500g", checked: false },
-      { name: "Multigrain Atta", qty: "2 kg", checked: false },
-    ],
-  },
-  {
-    aisle: "Proteins & Dairy",
-    items: [
-      { name: "Low-Fat Malai Paneer", qty: "400g", checked: false },
-      { name: "Organic Firm Tofu", qty: "300g", checked: false },
-      { name: "A2 Set Curd / Greek Yogurt", qty: "1 kg", checked: false },
-      { name: "Eggs (Free Range)", qty: "12 pack", checked: false },
-    ],
-  },
-  {
-    aisle: "Pantry Spices & Healthy Fats",
-    items: [
-      { name: "Cold-Pressed Mustard / Coconut Oil", qty: "1 bottle", checked: false },
-      { name: "Roasted Makhana", qty: "200g", checked: false },
-      { name: "Chia Seeds & Pumpkin Seeds", qty: "200g", checked: false },
-      { name: "Whole Cumin & Mustard Seeds", qty: "100g", checked: true },
-    ],
-  },
-];
-
 export default function PlannerPage() {
   const { status, mounted } = useRealTime(1000);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -131,7 +89,6 @@ export default function PlannerPage() {
   const [selectedDay, setSelectedDay] = useState("Monday");
   const [planData, setPlanData] = useState<Record<string, MealSlot[]>>(INITIAL_DAYS);
   const [groceryModalOpen, setGroceryModalOpen] = useState(false);
-  const [groceries, setGroceries] = useState(SAMPLE_GROCERY_AISLES);
 
   // Manual Meal Entry Modal state
   const [manualModalOpen, setManualModalOpen] = useState(false);
@@ -284,14 +241,6 @@ export default function PlannerPage() {
     if (confirm("Reset this week's meal plan to default balanced menu?")) {
       savePlan(INITIAL_DAYS);
     }
-  };
-
-  const toggleGroceryItem = (aisleIdx: number, itemIdx: number) => {
-    setGroceries((prev) => {
-      const copy = [...prev];
-      copy[aisleIdx].items[itemIdx].checked = !copy[aisleIdx].items[itemIdx].checked;
-      return copy;
-    });
   };
 
   const activeMeals = planData[selectedDay] || INITIAL_DAYS[selectedDay] || [];
@@ -635,84 +584,11 @@ export default function PlannerPage() {
       </div>
 
       {/* Grocery List Modal */}
-      {groceryModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="max-w-2xl w-full max-h-[85vh] bg-[var(--surface)] border border-[var(--border)] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in">
-            {/* Modal Header */}
-            <div className="p-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--surface-elevated)]">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[var(--accent)] text-white flex items-center justify-center">
-                  <ShoppingBag className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-xl font-semibold text-[var(--text)]">
-                    Aggregated Grocery List
-                  </h3>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    For {weekInfo.weekLabel} • Grouped by market aisles.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setGroceryModalOpen(false)}
-                className="p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)]"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Aisle Items List */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-sm">
-              {groceries.map((aisle, aisleIdx) => (
-                <div key={aisleIdx} className="space-y-3">
-                  <h4 className="font-serif text-base font-semibold text-[var(--primary)] flex items-center gap-2 border-b border-[var(--border)] pb-1.5">
-                    <span>{aisle.aisle}</span>
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {aisle.items.map((item, itemIdx) => (
-                      <div
-                        key={itemIdx}
-                        onClick={() => toggleGroceryItem(aisleIdx, itemIdx)}
-                        className={`p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                          item.checked
-                            ? "bg-[var(--surface-elevated)] border-[var(--border)] opacity-60 line-through text-[var(--text-muted)]"
-                            : "bg-[var(--surface)] border-[var(--border)] text-[var(--text)] hover:border-[var(--primary)]"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <input
-                            type="checkbox"
-                            checked={item.checked}
-                            readOnly
-                            className="rounded accent-[var(--primary)]"
-                          />
-                          <span>{item.name}</span>
-                        </div>
-                        <span className="text-xs font-semibold text-[var(--text-muted)]">
-                          {item.qty}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Modal Actions */}
-            <div className="p-4 border-t border-[var(--border)] bg-[var(--surface-elevated)] flex items-center justify-between gap-3">
-              <span className="text-xs text-[var(--text-muted)]">
-                Check off items as you shop in your local market.
-              </span>
-              <button
-                onClick={() => setGroceryModalOpen(false)}
-                className="px-6 py-2.5 rounded-2xl bg-[var(--text)] text-[var(--background)] font-medium text-xs hover:opacity-90"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <GroceryListModal
+        isOpen={groceryModalOpen}
+        onClose={() => setGroceryModalOpen(false)}
+        weekLabel={weekInfo.weekLabel}
+      />
 
       {/* Manual Meal AI Analysis Modal */}
       <ManualMealModal

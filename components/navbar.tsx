@@ -19,11 +19,13 @@ import {
   ShieldAlert,
   Stethoscope,
   LogOut,
+  ShoppingBag,
 } from "lucide-react";
 
 const NAV_LINKS = [
   { name: "Overview", href: "/" },
   { name: "Meal Planner", href: "/planner", icon: CalendarDays },
+  { name: "Groceries", href: "/grocery", icon: ShoppingBag },
   { name: "Health Care", href: "/care", icon: Stethoscope },
   { name: "Daily Rhythm", href: "/tracker", icon: HeartPulse },
   { name: "Chef Grace", href: "/grace", icon: Sparkles },

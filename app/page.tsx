@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -164,6 +164,16 @@ export default function LandingPage() {
   // FAQ Accordion
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
+  const chatAbortRef = useRef<AbortController | null>(null);
+
+  const handleCancelChat = () => {
+    if (chatAbortRef.current) {
+      chatAbortRef.current.abort();
+      chatAbortRef.current = null;
+    }
+    setIsChatLoading(false);
+  };
+
   const handleSimulateChat = async (query?: string) => {
     const text = query || chatInput;
     if (!text.trim() || isChatLoading) return;
@@ -174,6 +184,10 @@ export default function LandingPage() {
     setChatLog((prev) => [...prev, { role: "user", text: userText }]);
     setIsChatLoading(true);
 
+    const controller = new AbortController();
+    chatAbortRef.current = controller;
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -181,14 +195,17 @@ export default function LandingPage() {
         body: JSON.stringify({
           message: userText,
           mode: chatMode,
-          history: chatLog.map((m) => ({
+          history: chatLog.slice(-6).map((m) => ({
             role: m.role,
             content: m.text,
           })),
         }),
+        signal: controller.signal,
       });
 
-      const data = await res.json();
+      clearTimeout(timeoutId);
+      const data = await res.json().catch(() => ({}));
+
       setChatLog((prev) => [
         ...prev,
         {
@@ -198,17 +215,23 @@ export default function LandingPage() {
           helpline: data.helpline,
         },
       ]);
-    } catch (err) {
-      console.error("Landing chat error:", err);
+    } catch (err: unknown) {
+      clearTimeout(timeoutId);
+      const isAborted = err instanceof Error && (err.name === "AbortError" || err.message?.includes("aborted"));
+      console.warn("Landing chat error:", err);
       setChatLog((prev) => [
         ...prev,
         {
           role: "grace",
-          text: "Grace encountered a connection pause. Please try asking again.",
+          text: isAborted
+            ? "Request took longer than expected due to connection latency. Please try again."
+            : "Grace encountered a connection pause. Please try asking again.",
           alert: false,
         },
       ]);
     } finally {
+      clearTimeout(timeoutId);
+      chatAbortRef.current = null;
       setIsChatLoading(false);
     }
   };
@@ -577,11 +600,17 @@ export default function LandingPage() {
             ))}
 
             {isChatLoading && (
-              <div className="flex justify-start">
-                <div className="p-3.5 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-xs text-[var(--text)] flex items-center gap-2 shadow-sm">
+              <div className="flex justify-start items-center gap-2">
+                <div className="p-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-xs text-[var(--text)] flex items-center gap-2 shadow-sm">
                   <Loader2 className="w-4 h-4 animate-spin text-[var(--primary)]" />
                   <span>Chef Grace is writing out your points...</span>
                 </div>
+                <button
+                  onClick={handleCancelChat}
+                  className="text-xs px-3 py-2 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)] hover:bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors shadow-xs"
+                >
+                  Cancel
+                </button>
               </div>
             )}
           </div>

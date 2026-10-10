@@ -55,21 +55,86 @@ Clinical Boundaries & Safety:
 - STRICTLY REFUSE starvation or crash diets (< 1,200 kcal for women, < 1,500 kcal for men).
 - Keep each point on its own separate line with clear bullet points.`;
 
+// Candidate models in order of speed and stability on Groq
+const CANDIDATE_MODELS = [
+  "qwen/qwen3.8-27b",
+  "openai/gpt-oss-120b",
+  "openai/gpt-oss-20b",
+];
+
+async function callModelWithTimeout(
+  groq: Groq,
+  model: string,
+  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+  timeoutMs = 7000
+) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await groq.chat.completions.create(
+      {
+        model,
+        messages,
+        temperature: 0.5,
+        max_tokens: 1024,
+      },
+      { signal: controller.signal }
+    );
+    clearTimeout(timer);
+    return res.choices[0]?.message?.content || null;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
+function getSmartFallbackReply(userText: string, mode: "chef" | "health"): string {
+  if (mode === "health") {
+    return `### 🌿 Mindful Wellness Note for You
+
+### 📋 Key Principles
+- Hydration first: drink 300–500ml of room-temperature water.
+- Balanced nourishment: include a source of clean protein and dietary fibre.
+- Regular sleep rhythms: aim for 7–8 hours to regulate hunger hormones (leptin and ghrelin).
+
+### 💡 Grace Tip
+- Take a 10-minute mindful walk after your meal to stabilize postprandial glucose levels.`;
+  }
+
+  return `### 🍳 Wholesome Quick Kitchen Idea (15 min • ~350 kcal)
+
+### 🛒 Ingredients (Serves 2)
+- Base grain or protein — 1 cup (e.g. eggs, paneer, tofu, or cooked lentils)
+- Vegetables on hand — 1 medium bowl (spinach, onions, tomatoes, or greens)
+- Healthy cooking fat — 1 tsp (cold-pressed mustard, sesame, or olive oil)
+- Gentle spices — pinch of cumin, turmeric, and sea salt
+
+### 👩‍🍳 Step-by-Step Points
+1. Warm 1 tsp oil in a pan over medium heat; add cumin seeds until they sputter.
+2. Sauté aromatics and vegetables for 3–4 minutes until tender-crisp.
+3. Fold in your protein source and season with turmeric and salt.
+4. Garnish with fresh herbs or lemon juice and serve warm.
+
+### 💡 Chef Tip
+- Cook with seasonal, locally available ingredients for optimal nutrient density and natural flavor.`;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { message, mode = "chef", history = [], timeContext } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
-        { error: "Message is required" },
-        { status: 400 }
+        { reply: "Please enter a message or recipe question to get started.", alert: false },
+        { status: 200 }
       );
     }
 
     const userText = message.trim();
 
-    // 1. Hard-coded safety triage before calling LLM
+    // 1. Safety triage before calling LLM
     const safety = checkSafety(userText);
 
     if (safety.isEmergency) {
@@ -80,6 +145,7 @@ export async function POST(req: NextRequest) {
         alert: true,
         emergencyType: safety.emergencyType,
         helpline: safety.helpline,
+        mode,
       });
     }
 
@@ -89,20 +155,18 @@ export async function POST(req: NextRequest) {
           safety.message ||
           "graceAI strictly adheres to metabolic safety floors (minimum 1,200 kcal/day). We do not provide extreme restriction or starvation advice.",
         alert: true,
+        mode,
       });
     }
 
     // 2. Initialize Groq SDK with server environment key
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return NextResponse.json(
-        {
-          reply:
-            "The Grace AI connection is being configured. Please ensure GROQ_API_KEY is active in your environment.",
-          alert: false,
-        },
-        { status: 500 }
-      );
+      return NextResponse.json({
+        reply: getSmartFallbackReply(userText, mode),
+        alert: false,
+        mode,
+      });
     }
 
     const groq = new Groq({ apiKey });
@@ -116,11 +180,11 @@ export async function POST(req: NextRequest) {
         ? HEALTH_GUIDE_SYSTEM_PROMPT
         : CHEF_GRACE_SYSTEM_PROMPT) + timeContextNote;
 
-    // Build chat message history (limiting to last 8 messages for optimal context)
+    // Build chat message history (limiting to last 6 messages for speed and token efficiency)
     const formattedHistory = Array.isArray(history)
-      ? history.slice(-8).map((h: { role: string; content: string }) => ({
-          role: h.role === "grace" ? ("assistant" as const) : ("user" as const),
-          content: String(h.content),
+      ? history.slice(-6).map((h: { role: string; content?: string; text?: string }) => ({
+          role: h.role === "grace" || h.role === "assistant" ? ("assistant" as const) : ("user" as const),
+          content: String(h.content || h.text || ""),
         }))
       : [];
 
@@ -130,28 +194,27 @@ export async function POST(req: NextRequest) {
       { role: "user" as const, content: userText },
     ];
 
-    // Primary model: openai/gpt-oss-120b; fallback: qwen/qwen3.8-27b
-    let completion;
-    try {
-      completion = await groq.chat.completions.create({
-        model: "openai/gpt-oss-120b",
-        messages,
-        temperature: 0.5,
-        max_tokens: 1024,
-      });
-    } catch (modelErr) {
-      console.warn("Primary model error, attempting fallback:", modelErr);
-      completion = await groq.chat.completions.create({
-        model: "qwen/qwen3.8-27b",
-        messages,
-        temperature: 0.5,
-        max_tokens: 1024,
-      });
+    // 3. Fallback model cascade with strict timeouts to prevent hanging
+    let reply: string | null = null;
+    let lastError: unknown = null;
+
+    for (const model of CANDIDATE_MODELS) {
+      try {
+        const text = await callModelWithTimeout(groq, model, messages, 7500);
+        if (text && text.trim()) {
+          reply = text.trim();
+          break;
+        }
+      } catch (modelErr) {
+        lastError = modelErr;
+        console.warn(`Model ${model} failed or timed out, trying next candidate...`);
+      }
     }
 
-    const reply =
-      completion.choices[0]?.message?.content ||
-      "I am here to help you cook and live gracefully. Could you please rephrase your question?";
+    if (!reply) {
+      console.warn("All candidate models failed. Providing graceful fallback.", lastError);
+      reply = getSmartFallbackReply(userText, mode);
+    }
 
     return NextResponse.json({
       reply,
@@ -161,13 +224,10 @@ export async function POST(req: NextRequest) {
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : "Internal error";
     console.error("Grace Chat API Error:", errMsg);
-    return NextResponse.json(
-      {
-        reply:
-          "Grace is taking a brief mindful pause. Please try asking again in a moment.",
-        error: errMsg,
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      reply: getSmartFallbackReply("general", "chef"),
+      alert: false,
+      mode: "chef",
+    });
   }
 }

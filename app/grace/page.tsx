@@ -48,6 +48,9 @@ export default function GraceChatPage() {
     },
   ]);
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const lastUserTextRef = useRef<string>("");
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -56,11 +59,20 @@ export default function GraceChatPage() {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsTyping(false);
+  };
+
   const handleSend = async (textOverride?: string) => {
     const raw = textOverride || input;
     if (!raw.trim() || isTyping) return;
 
     const userText = raw.trim();
+    lastUserTextRef.current = userText;
     setInput("");
 
     const userMsg: Message = {
@@ -73,9 +85,13 @@ export default function GraceChatPage() {
     setMessages((prev) => [...prev, userMsg]);
     setIsTyping(true);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     try {
       // Build lightweight conversation history for model context
-      const historyContext = messages.map((m) => ({
+      const historyContext = messages.slice(-6).map((m) => ({
         role: m.role,
         content: m.content,
       }));
@@ -89,34 +105,45 @@ export default function GraceChatPage() {
           history: historyContext,
           timeContext: getRealTimeStatus(new Date()),
         }),
+        signal: controller.signal,
       });
 
-      const data = await res.json();
+      clearTimeout(timeoutId);
+
+      const data = await res.json().catch(() => ({}));
 
       setMessages((prev) => [
         ...prev,
         {
           id: "g_" + Date.now(),
           role: "grace",
-          content: data.reply || "Grace is processing your request. Please try again.",
+          content:
+            data.reply ||
+            "I am here to guide your culinary and wellness journey. Could you please rephrase your request?",
           mode,
           alert: Boolean(data.alert),
           helpline: data.helpline,
         },
       ]);
-    } catch (err) {
-      console.error("Chat error:", err);
+    } catch (err: unknown) {
+      clearTimeout(timeoutId);
+      const isAborted = err instanceof Error && (err.name === "AbortError" || err.message?.includes("aborted"));
+      console.warn("Chat error:", err);
       setMessages((prev) => [
         ...prev,
         {
           id: "g_" + Date.now(),
           role: "grace",
-          content: "Grace encountered a connection pause. Please try asking again in a moment.",
+          content: isAborted
+            ? "Grace's reply took a bit longer than expected due to connection latency. Tap 'Retry' to try again."
+            : "Grace encountered a brief connection pause. Please tap 'Retry' below.",
           mode,
           alert: false,
         },
       ]);
     } finally {
+      clearTimeout(timeoutId);
+      abortControllerRef.current = null;
       setIsTyping(false);
     }
   };
@@ -276,16 +303,34 @@ export default function GraceChatPage() {
                   </div>
                 </div>
               )}
+              {m.role === "grace" && m.content.includes("Retry") && (
+                <div className="pt-2 border-t border-[var(--border)]/60 flex items-center justify-between text-xs">
+                  <span className="text-[var(--text-muted)] text-[11px]">Tap to re-attempt:</span>
+                  <button
+                    onClick={() => handleSend(lastUserTextRef.current)}
+                    className="px-3 py-1 rounded-lg bg-[var(--primary)] text-white text-xs font-medium hover:opacity-90 flex items-center gap-1.5 shadow-xs"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Retry</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ))}
 
         {isTyping && (
-          <div className="flex justify-start">
+          <div className="flex justify-start items-center gap-2">
             <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-2xl px-4 py-3 text-xs text-[var(--text)] flex items-center gap-2 shadow-sm">
               <Loader2 className="w-4 h-4 text-[var(--primary)] animate-spin" />
-              <span>Grace is thinking with Groq LLM...</span>
+              <span>Grace is writing down your points...</span>
             </div>
+            <button
+              onClick={handleCancel}
+              className="text-xs px-3 py-2 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors shadow-xs"
+            >
+              Cancel
+            </button>
           </div>
         )}
 

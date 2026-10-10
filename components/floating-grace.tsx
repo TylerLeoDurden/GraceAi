@@ -26,6 +26,7 @@ export function FloatingGrace() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; text: string; alert?: boolean }>>([
     {
@@ -44,7 +45,13 @@ export function FloatingGrace() {
     }
   }, [messages, isTyping, isOpen]);
 
-  if (pathname === "/grace") return null;
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsTyping(false);
+  };
 
   const handleSend = async (query?: string) => {
     const textToSend = query || input;
@@ -55,6 +62,10 @@ export function FloatingGrace() {
     setMessages((prev) => [...prev, { role: "user", text: userMsg }]);
     setIsTyping(true);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -62,15 +73,18 @@ export function FloatingGrace() {
         body: JSON.stringify({
           message: userMsg,
           mode,
-          history: messages.map((m) => ({
+          history: messages.slice(-6).map((m) => ({
             role: m.role === "assistant" ? "grace" : "user",
             content: m.text,
           })),
           timeContext: getRealTimeStatus(new Date()),
         }),
+        signal: controller.signal,
       });
 
-      const data = await res.json();
+      clearTimeout(timeoutId);
+      const data = await res.json().catch(() => ({}));
+
       setMessages((prev) => [
         ...prev,
         {
@@ -79,16 +93,22 @@ export function FloatingGrace() {
           alert: Boolean(data.alert),
         },
       ]);
-    } catch (err) {
-      console.error("Floating Grace error:", err);
+    } catch (err: unknown) {
+      clearTimeout(timeoutId);
+      const isAborted = err instanceof Error && (err.name === "AbortError" || err.message?.includes("aborted"));
+      console.warn("Floating Grace error:", err);
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          text: "Grace encountered a connection pause. Please try asking again.",
+          text: isAborted
+            ? "Request took longer than expected due to connection latency. Please try asking again."
+            : "Grace encountered a connection pause. Please try asking again.",
         },
       ]);
     } finally {
+      clearTimeout(timeoutId);
+      abortControllerRef.current = null;
       setIsTyping(false);
     }
   };
@@ -104,6 +124,10 @@ export function FloatingGrace() {
       },
     ]);
   };
+
+  if (pathname === "/grace") {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-20 md:bottom-8 right-5 z-40">
@@ -221,11 +245,17 @@ export function FloatingGrace() {
             ))}
 
             {isTyping && (
-              <div className="flex justify-start">
-                <div className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[11px] text-[var(--text-muted)] flex items-center gap-2">
+              <div className="flex justify-start items-center gap-2">
+                <div className="p-2.5 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[11px] text-[var(--text-muted)] flex items-center gap-2">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--primary)]" />
                   <span>Writing down points...</span>
                 </div>
+                <button
+                  onClick={handleCancel}
+                  className="text-[11px] px-2.5 py-1.5 rounded-lg bg-[var(--surface-elevated)] border border-[var(--border)] hover:bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                >
+                  Cancel
+                </button>
               </div>
             )}
 
