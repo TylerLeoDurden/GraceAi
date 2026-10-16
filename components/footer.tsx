@@ -36,7 +36,7 @@ export function Footer() {
             <div className="flex items-center gap-2.5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/grace-icon.png"
+                src="/logo.png"
                 alt="graceAI"
                 className="w-9 h-9 rounded-xl object-cover"
               />

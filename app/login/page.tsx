@@ -78,7 +78,7 @@ export default function LoginPage() {
         <div className="text-center space-y-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/grace-icon.png"
+            src="/logo.png"
             alt="graceAI"
             className="w-14 h-14 rounded-2xl object-cover mx-auto shadow-sm"
           />

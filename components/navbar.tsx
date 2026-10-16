@@ -67,9 +67,9 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-3 group">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/grace-icon.png"
+              src="/logo.png"
               alt="graceAI"
-              className="w-10 h-10 rounded-xl object-cover shadow-sm transition-transform duration-200 group-hover:scale-105"
+              className="h-11 w-11 rounded-2xl object-cover shadow-md transition-all duration-200 group-hover:scale-105 group-hover:shadow-lg"
             />
             <div className="flex flex-col">
               <span className="font-serif text-2xl font-semibold tracking-tight text-[var(--text)]">
@@ -80,6 +80,7 @@ export function Navbar() {
               </span>
             </div>
           </Link>
+
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1 lg:gap-2">

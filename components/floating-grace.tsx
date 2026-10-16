@@ -144,7 +144,7 @@ export function FloatingGrace() {
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/grace-icon.png"
+                src="/logo.png"
                 alt="Grace"
                 className="w-9 h-9 rounded-full object-cover"
               />
@@ -336,7 +336,7 @@ export function FloatingGrace() {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/grace-icon.png"
+          src="/logo.png"
           alt="Ask Grace"
           className="w-6 h-6 rounded-full object-cover"
         />

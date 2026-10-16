@@ -537,7 +537,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/grace-icon.png"
+                src="/logo.png"
                 alt="Grace"
                 className="w-10 h-10 rounded-full object-cover"
               />
