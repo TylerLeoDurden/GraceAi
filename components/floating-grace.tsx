@@ -142,9 +142,12 @@ export function FloatingGrace() {
           {/* Header */}
           <div className="px-5 py-4 bg-[var(--surface-elevated)] border-b border-[var(--border)] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-serif text-sm font-semibold">
-                G
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/grace-icon.png"
+                alt="Grace"
+                className="w-9 h-9 rounded-full object-cover"
+              />
               <div>
                 <h4 className="font-serif text-base font-semibold text-[var(--text)]">
                   Grace
@@ -331,9 +334,12 @@ export function FloatingGrace() {
         aria-label="Ask Grace"
         className="group flex items-center gap-2.5 px-4 py-3 rounded-full bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] shadow-lg hover:shadow-xl transition-all duration-200"
       >
-        <div className="w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-serif font-bold flex items-center justify-center">
-          g
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/grace-icon.png"
+          alt="Ask Grace"
+          className="w-6 h-6 rounded-full object-cover"
+        />
         <span className="font-serif font-medium text-sm text-[var(--text)] hidden sm:inline">
           Ask Grace
         </span>

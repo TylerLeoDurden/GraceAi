@@ -65,13 +65,25 @@ export function Navbar() {
         <div className="max-w-[1760px] w-full mx-auto px-4 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-[var(--primary)] text-white flex items-center justify-center font-serif text-lg font-bold shadow-sm transition-transform duration-200 group-hover:scale-105">
-              g
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/grace-icon.png"
+              alt="graceAI icon"
+              className="w-10 h-10 rounded-xl object-cover shadow-sm transition-transform duration-200 group-hover:scale-105"
+            />
             <div className="flex flex-col">
-              <span className="font-serif text-2xl font-semibold tracking-tight text-[var(--text)]">
-                grace<span className="text-[var(--primary)] font-normal italic">ai</span>
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/grace-logo-light.png"
+                alt="graceAI"
+                className="h-7 w-auto object-contain dark:hidden"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/grace-logo-dark.png"
+                alt="graceAI"
+                className="h-7 w-auto object-contain hidden dark:block"
+              />
               <span className="text-[10px] tracking-widest uppercase text-[var(--text-muted)] font-medium hidden sm:inline-block">
                 Culinary Wellness &amp; Nourishment
               </span>

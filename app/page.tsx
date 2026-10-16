@@ -535,9 +535,12 @@ export default function LandingPage() {
           {/* Header */}
           <div className="p-4 sm:p-5 bg-[var(--surface-elevated)] border-b border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-serif font-bold text-sm">
-                G
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/grace-icon.png"
+                alt="Grace"
+                className="w-10 h-10 rounded-full object-cover"
+              />
               <div>
                 <h3 className="font-serif text-base font-semibold text-[var(--text)]">
                   Grace

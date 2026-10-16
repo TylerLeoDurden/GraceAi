@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Heart, Shield, PhoneCall } from "lucide-react";
+import { Heart, Shield, PhoneCall } from "lucide-react";
 
 
 export function Footer() {
@@ -34,12 +34,26 @@ export function Footer() {
           {/* Brand Col */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-[var(--primary)]/15 border border-[var(--primary)]/30 flex items-center justify-center text-[var(--primary)]">
-                <Sparkles className="w-5 h-5 fill-[var(--primary)]/30" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/grace-icon.png"
+                alt="graceAI icon"
+                className="w-9 h-9 rounded-xl object-cover"
+              />
+              <div className="flex flex-col">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/grace-logo-light.png"
+                  alt="graceAI"
+                  className="h-6 w-auto object-contain dark:hidden"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/grace-logo-dark.png"
+                  alt="graceAI"
+                  className="h-6 w-auto object-contain hidden dark:block"
+                />
               </div>
-              <span className="font-serif text-2xl font-bold tracking-tight text-[var(--text)]">
-                grace<span className="text-[var(--primary)] italic font-light">AI</span>
-              </span>
             </div>
             <p className="text-sm text-[var(--text-muted)] leading-relaxed">
               Eat well. Live gracefully. A calm, free, and privacy-respecting wellness companion designed for authentic lifestyle nourishment.
