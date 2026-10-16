@@ -83,18 +83,9 @@ export default function LoginPage() {
             className="w-14 h-14 rounded-2xl object-cover mx-auto shadow-sm"
           />
           <div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/grace-logo-light.png"
-              alt="graceAI"
-              className="h-9 w-auto object-contain mx-auto mb-1 dark:hidden"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/grace-logo-dark.png"
-              alt="graceAI"
-              className="h-9 w-auto object-contain mx-auto mb-1 hidden dark:block"
-            />
+            <h1 className="font-serif text-2xl sm:text-3xl font-semibold text-[var(--text)]">
+              Welcome to grace<span className="text-[var(--primary)] italic font-normal">ai</span>
+            </h1>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">
               Eat well. Live gracefully.
             </p>

@@ -37,23 +37,12 @@ export function Footer() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/grace-icon.png"
-                alt="graceAI icon"
+                alt="graceAI"
                 className="w-9 h-9 rounded-xl object-cover"
               />
-              <div className="flex flex-col">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/grace-logo-light.png"
-                  alt="graceAI"
-                  className="h-6 w-auto object-contain dark:hidden"
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/grace-logo-dark.png"
-                  alt="graceAI"
-                  className="h-6 w-auto object-contain hidden dark:block"
-                />
-              </div>
+              <span className="font-serif text-2xl font-bold tracking-tight text-[var(--text)]">
+                grace<span className="text-[var(--primary)] italic font-light">AI</span>
+              </span>
             </div>
             <p className="text-sm text-[var(--text-muted)] leading-relaxed">
               Eat well. Live gracefully. A calm, free, and privacy-respecting wellness companion designed for authentic lifestyle nourishment.

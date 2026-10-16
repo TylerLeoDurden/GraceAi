@@ -2,43 +2,75 @@
 
 @layer base {
   :root {
-    /* Humanized Organic Linen & Warm Botanical Palette */
-    --primary: #2F5A44;            /* Rich Laurel & Rosemary Botanical Green */
-    --primary-hover: #244836;
-    --primary-light: #EDF4EF;      /* Delicate Morning Matcha */
-    --primary-border: #BDD3C6;
-    --background: #FBF9F5;         /* Warm Unbleached Linen / Japanese Washi */
-    --surface: #FFFFFF;            /* Warm Porcelain */
-    --surface-elevated: #F2ECE1;   /* Toasted Oat / Steamed Bisque */
-    --border: #E5DDD1;             /* Delicate Hand-spun Linen Thread */
-    --accent: #BC5735;             /* Sun-baked Terracotta & Ceylon Cinnamon */
-    --accent-hover: #A74828;
-    --accent-light: #FAF1EB;       /* Roasted Almond Cream */
-    --text: #211E1B;               /* Deep Roasted Espresso */
-    --text-muted: #746C64;         /* Earthy Pebble Taupe */
-    --success: #337B52;            /* Garden Thyme */
-    --warning: #C57822;            /* Golden Saffron & Turmeric */
-    --danger: #B64237;             /* Wild Madder / Dried Hibiscus */
+    /* ─── Light Theme — "Morning Garden" ──────────────────────────────────────
+       Inspired by the logo's light version: cream parchment grounds,
+       deep forest greens for authority, sage greens for warmth,
+       and a terracotta-rose accent for energy & CTA moments.
+    ──────────────────────────────────────────────────────────────────────── */
+
+    /* Brand Green — logo leaf deep forest */
+    --primary:           #2C5F47;   /* Forest Canopy */
+    --primary-hover:     #1F4A35;   /* Old Growth Shade */
+    --primary-light:     #EEF6F1;   /* New Leaf Mist */
+    --primary-border:    #B2D4C0;   /* Pale Sage Rim */
+
+    /* Backgrounds — warm, breathable, paper-like */
+    --background:        #F8F6F1;   /* Handmade Paper */
+    --surface:           #FFFFFF;   /* Clean Porcelain */
+    --surface-elevated:  #EFF0EC;   /* Frosted Herb Marble */
+
+    /* Borders — soft, natural, unobtrusive */
+    --border:            #DDE3DA;   /* Dried Grass Thread */
+
+    /* Accent — warm terracotta for CTA / energy */
+    --accent:            #C25E3A;   /* Sunbaked Clay Pot */
+    --accent-hover:      #A84D2D;   /* Smoked Ember */
+    --accent-light:      #FBF0EB;   /* Blushed Cream */
+
+    /* Text — warm near-black, readable and human */
+    --text:              #1E2621;   /* Midnight Grove */
+    --text-muted:        #6A7A6E;   /* Faded Fern */
+
+    /* Semantic */
+    --success:           #2E7A50;   /* Garden Basil */
+    --warning:           #C97B1A;   /* Golden Turmeric */
+    --danger:            #C03535;   /* Dried Pomegranate */
   }
 
   .dark {
-    /* Nocturnal Botanical Peat & Warm Ember Palette */
-    --primary: #88BC9E;            /* Luminous Eucalyptus Sage */
-    --primary-hover: #9BC8AF;
-    --primary-light: #18241E;
-    --primary-border: #2B3D34;
-    --background: #141716;         /* Serene Nocturnal Peat */
-    --surface: #1C211E;            /* Tactile Mineral Stone */
-    --surface-elevated: #242B27;   /* Obsidian Shelf */
-    --border: #2C3631;             /* Soft Dark Slate Rim */
-    --accent: #DF8360;             /* Terracotta Embers */
-    --accent-hover: #E89574;
-    --accent-light: #2A1D17;
-    --text: #F4F0E8;               /* Unbleached Cotton Linen */
-    --text-muted: #9EA8A1;         /* Dusted Lichen Taupe */
-    --success: #56BC80;
-    --warning: #EEA442;
-    --danger: #DE5F57;
+    /* ─── Dark Theme — "Forest Night" ────────────────────────────────────────
+       Inspired by the logo dark version: deep peat backgrounds,
+       luminous mint-sage greens that glow, amber warmth for energy.
+       Feels like candlelight inside an old greenhouse.
+    ──────────────────────────────────────────────────────────────────────── */
+
+    /* Brand Green — luminous sage, glows against dark */
+    --primary:           #7DC99E;   /* Luminous Moonlit Sage */
+    --primary-hover:     #93D5B1;   /* Dew on Fern */
+    --primary-light:     #152219;   /* Deep Forest Shadow */
+    --primary-border:    #273D2E;   /* Pine Bark Rim */
+
+    /* Backgrounds — rich, warm, dark forest */
+    --background:        #111714;   /* Midnight Peat */
+    --surface:           #192018;   /* Forest Floor */
+    --surface-elevated:  #1F2B21;   /* Moss Shelf */
+
+    /* Borders — barely visible, organic */
+    --border:            #283626;   /* Weathered Bark */
+
+    /* Accent — warm amber-terracotta, fire in the forest */
+    --accent:            #E08050;   /* Ember Glow */
+    --accent-hover:      #EF9060;   /* Warm Firelight */
+    --accent-light:      #261810;   /* Smoldering Ash */
+
+    /* Text — luminous, warm linen */
+    --text:              #EEF0E8;   /* Moonlit Linen */
+    --text-muted:        #8FA895;   /* Soft Lichen */
+
+    /* Semantic */
+    --success:           #55C080;   /* Bioluminescent Fern */
+    --warning:           #EFB045;   /* Saffron Lantern */
+    --danger:            #E05555;   /* Red Currant */
   }
 
   * {
@@ -49,7 +81,7 @@
     background-color: var(--background);
     color: var(--text);
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -58,71 +90,165 @@
     font-family: var(--font-fraunces), Georgia, serif;
     font-feature-settings: "liga" 1, "kern" 1;
   }
+
+  /* Smooth focus ring using brand green */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Selection highlight — brand mint */
+  ::selection {
+    background-color: var(--primary-light);
+    color: var(--primary);
+  }
 }
 
 @theme {
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-light: var(--primary-light);
-  --color-primary-border: var(--primary-border);
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-surface-elevated: var(--surface-elevated);
-  --color-border: var(--border);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-light: var(--accent-light);
-  --color-text: var(--text);
-  --color-text-muted: var(--text-muted);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-danger: var(--danger);
+  --color-primary:           var(--primary);
+  --color-primary-hover:     var(--primary-hover);
+  --color-primary-light:     var(--primary-light);
+  --color-primary-border:    var(--primary-border);
+  --color-background:        var(--background);
+  --color-surface:           var(--surface);
+  --color-surface-elevated:  var(--surface-elevated);
+  --color-border:            var(--border);
+  --color-accent:            var(--accent);
+  --color-accent-hover:      var(--accent-hover);
+  --color-accent-light:      var(--accent-light);
+  --color-text:              var(--text);
+  --color-text-muted:        var(--text-muted);
+  --color-success:           var(--success);
+  --color-warning:           var(--warning);
+  --color-danger:            var(--danger);
 
   --font-serif: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-sans:  var(--font-inter), system-ui, sans-serif;
 }
 
-/* Crafted card styling */
+/* ─────────────────────────────────────────────────────────────────────────────
+   CARD SYSTEM — Editorial cards with organic depth & hover lift
+───────────────────────────────────────────────────────────────────────────── */
+
 .editorial-card {
   background-color: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 20px -2px rgba(45, 38, 30, 0.04), 0 1px 3px rgba(45, 38, 30, 0.02);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow:
+    0 1px 2px rgba(30, 38, 33, 0.04),
+    0 4px 16px -4px rgba(30, 38, 33, 0.06);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+.editorial-card:hover {
+  border-color: var(--primary-border);
+  box-shadow:
+    0 2px 4px rgba(30, 38, 33, 0.05),
+    0 8px 28px -6px rgba(44, 95, 71, 0.13);
 }
 
 .dark .editorial-card {
   background-color: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.45);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 4px 24px -6px rgba(0, 0, 0, 0.5);
 }
 
-/* Glassmorphism navigation */
+.dark .editorial-card:hover {
+  border-color: var(--primary-border);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    0 10px 32px -8px rgba(0, 0, 0, 0.55),
+    0 0 0 1px var(--primary-border);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLASS NAVIGATION — Refined backdrop blur panels
+───────────────────────────────────────────────────────────────────────────── */
+
 .glass-panel {
-  background: rgba(251, 249, 245, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
+  background: rgba(248, 246, 241, 0.86);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid rgba(221, 227, 218, 0.7);
+  box-shadow: 0 1px 20px rgba(30, 38, 33, 0.05);
 }
 
 .dark .glass-panel {
-  background: rgba(20, 23, 22, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
+  background: rgba(17, 23, 20, 0.88);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border-bottom: 1px solid rgba(40, 54, 38, 0.8);
+  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.4);
 }
 
-/* Custom scrollbar */
+/* ─────────────────────────────────────────────────────────────────────────────
+   CUSTOM SCROLLBAR — Brand sage, organic feel
+───────────────────────────────────────────────────────────────────────────── */
+
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--primary-border);
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: var(--primary);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RANGE INPUT — Brand green slider track
+───────────────────────────────────────────────────────────────────────────── */
+
+input[type="range"] {
+  accent-color: var(--primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MICRO-ANIMATIONS — Gentle, organic motion
+───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-in-from-top-2 {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.animate-in {
+  animation-fill-mode: both;
+  animation-duration: 200ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-in            { animation-name: fade-in; }
+.slide-in-from-top-2 { animation-name: slide-in-from-top-2; }
