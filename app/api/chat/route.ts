@@ -100,7 +100,7 @@ async function callModelWithTimeout(
     }
 
     // Edge case: if content was empty due to token boundary, fall back to reasoning content if clean
-    const msg = choice?.message as Record<string, unknown> | undefined;
+    const msg = choice?.message as unknown as Record<string, unknown> | undefined;
     if (msg?.reasoning && typeof msg.reasoning === "string" && msg.reasoning.length > 40) {
       return msg.reasoning.trim();
     }
