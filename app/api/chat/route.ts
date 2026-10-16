@@ -32,7 +32,11 @@ RESPONSE FORMATTING (STRICT FOR MOBILE/COMPACT CHAT):
    - Answer the user's specific question directly with clear, actionable bullet points.
    - Do NOT force a recipe template if they did not ask for a recipe.
 
-3. Keep points concise, practical, and easy to read. Never write run-on wall-of-text paragraphs.`;
+3. FOR GREETINGS & CASUAL CHAT (e.g. "hi", "hello", "hlo", "hey", "namaste"):
+   - Greet the user warmly and invite them to share what ingredients they have or what dish they want to cook today.
+   - Do NOT output a recipe template or pantry ingredients for a simple greeting.
+
+4. Keep points concise, practical, and easy to read. Never write run-on wall-of-text paragraphs.`;
 
 const HEALTH_GUIDE_SYSTEM_PROMPT = `You are Health Guide Grace, an evidence-based lifestyle, nutrition, and wellness companion inside graceAI.
 Tagline: "Eat well. Live gracefully."
@@ -42,16 +46,21 @@ YOUR APPROACH:
 - Warm, encouraging, clear, and actionable.
 
 RESPONSE FORMATTING (COMPACT & BULLET-POINTED):
-### 🌿 What's Happening
-- [Key physiological or nutritional explanation in 1-2 points]
+1. FOR WELLNESS QUESTIONS:
+   ### 🌿 What's Happening
+   - [Key physiological or nutritional explanation in 1-2 points]
 
-### 📋 Action Steps
-1. [Actionable step 1 with specific timing or measurement]
-2. [Actionable step 2]
-3. [Actionable step 3]
+   ### 📋 Action Steps
+   1. [Actionable step 1 with specific timing or measurement]
+   2. [Actionable step 2]
+   3. [Actionable step 3]
 
-### 💡 Mindful Daily Tip
-- [One gentle, sustainable habit anchor]
+   ### 💡 Mindful Daily Tip
+   - [One gentle, sustainable habit anchor]
+
+2. FOR GREETINGS & CASUAL CHAT (e.g. "hi", "hello", "hlo", "hey"):
+   - Greet the user warmly and invite them to share their wellness, hydration, sleep, or nutrition questions.
+   - Do NOT output an advice template for a simple greeting.
 
 CLINICAL BOUNDARIES & SAFETY:
 - You are NOT a doctor or prescribing physician. Never diagnose, prescribe medications, or give drug dosages.
@@ -113,6 +122,15 @@ async function callModelWithTimeout(
 }
 
 function getSmartFallbackReply(userText: string, mode: "chef" | "health"): string {
+  const clean = userText.toLowerCase().replace(/[^a-z]/g, "");
+  const isGreeting = ["hi", "hello", "hlo", "hey", "namaste", "goodmorning", "goodafternoon", "goodevening", "sup", "yo"].includes(clean);
+
+  if (isGreeting) {
+    return mode === "chef"
+      ? "Hello! I am Chef Grace. What ingredients do you have in your kitchen, or what dish would you like to cook today? 🍳✨"
+      : "Hello! I am your Grace Health Guide. How can I support your nutrition, hydration, or daily wellness rhythms today? 🌿✨";
+  }
+
   const querySummary = userText.length > 50 ? `${userText.slice(0, 47)}...` : userText;
 
   if (mode === "health") {
@@ -131,19 +149,12 @@ Regarding: *"${querySummary}"*
   return `### 🍳 Chef Grace Note
 Regarding: *"${querySummary}"*
 
-### 🛒 Quick Pantry Inspiration (Serves 2)
-- Base grain or protein — 1 cup (eggs, paneer, tofu, or cooked lentils)
-- Vegetables on hand — 1 medium bowl (spinach, onions, tomatoes, or greens)
-- Healthy cooking fat — 1 tsp (cold-pressed mustard, sesame, or olive oil)
-- Gentle spices — cumin, turmeric, and sea salt
-
-### 👩‍🍳 Quick Method
-1. Sauté aromatics in a warm pan with 1 tsp oil until fragrant.
-2. Add your vegetables and protein of choice with gentle spices.
-3. Cook 4–5 minutes until tender-crisp; finish with fresh herbs or lemon juice.
+### 🛒 Quick Kitchen Guidance
+- Tell me the ingredients you have on hand (e.g. veggies, grains, lentils, or proteins).
+- Or mention a dish you'd love to make, and I will write a step-by-step recipe tailored for you!
 
 ### 💡 Chef Tip
-- Cook with seasonal, locally available ingredients for optimal flavor and nutrient density.`;
+- Cook with fresh, seasonal ingredients for optimal flavor and nutrient density.`;
 }
 
 export async function POST(req: NextRequest) {
@@ -226,14 +237,15 @@ export async function POST(req: NextRequest) {
 
     for (const model of CANDIDATE_MODELS) {
       try {
-        const text = await callModelWithTimeout(groq, model, messages, 7500);
+        const text = await callModelWithTimeout(groq, model, messages, 12000);
         if (text && text.trim()) {
           reply = text.trim();
           break;
         }
       } catch (modelErr) {
         lastError = modelErr;
-        console.warn(`Model ${model} failed or timed out, trying next candidate...`);
+        const errStr = modelErr instanceof Error ? modelErr.message : String(modelErr);
+        console.warn(`Model ${model} failed or timed out: ${errStr}, trying next candidate...`);
       }
     }
 
