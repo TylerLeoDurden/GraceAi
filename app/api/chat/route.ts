@@ -68,23 +68,44 @@ async function callModelWithTimeout(
   groq: Groq,
   model: string,
   messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-  timeoutMs = 9000
+  timeoutMs = 12000
 ) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const res = await groq.chat.completions.create(
-      {
-        model,
-        messages,
-        temperature: 0.4,
-        max_tokens: 1024,
-      },
+    const requestOptions: Record<string, unknown> = {
+      model,
+      messages,
+      temperature: 0.4,
+      max_tokens: 2048,
+    };
+
+    // For reasoning models (gpt-oss), set reasoning_effort to "low" so reasoning tokens
+    // don't exhaust the token budget or delay response generation
+    if (model.includes("gpt-oss")) {
+      requestOptions.reasoning_effort = "low";
+    }
+
+    const res = await (groq.chat.completions.create as (opts: unknown, extra?: unknown) => Promise<Groq.Chat.ChatCompletion>)(
+      requestOptions,
       { signal: controller.signal }
     );
     clearTimeout(timer);
-    return res.choices[0]?.message?.content || null;
+
+    const choice = res.choices[0];
+    const content = choice?.message?.content?.trim();
+    if (content) {
+      return content;
+    }
+
+    // Edge case: if content was empty due to token boundary, fall back to reasoning content if clean
+    const msg = choice?.message as Record<string, unknown> | undefined;
+    if (msg?.reasoning && typeof msg.reasoning === "string" && msg.reasoning.length > 40) {
+      return msg.reasoning.trim();
+    }
+
+    return null;
   } catch (err) {
     clearTimeout(timer);
     throw err;
@@ -137,7 +158,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userText = message.trim();
+    const userText = message.trim().replace(/[\\]+$/, "").trim();
 
     // 1. Safety triage before calling LLM
     const safety = checkSafety(userText);
