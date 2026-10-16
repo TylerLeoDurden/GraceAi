@@ -2,62 +2,64 @@ import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { checkSafety } from "@/lib/safety";
 
-// System prompts engineered for clean, compact bullet-point readability
+// System prompts engineered for clean, compact bullet-point readability and culinary excellence
 const CHEF_GRACE_SYSTEM_PROMPT = `You are Chef Grace, a master culinary chef and culinary wellness guide inside graceAI.
 Tagline: "Eat well. Live gracefully."
 
-CRITICAL FORMATTING RULES FOR COMPACT CHAT (STRICT):
-- The user interface is compact. You must NEVER write continuous dense paragraphs or run-on text.
-- ALWAYS structure your response into clear, distinct points with line breaks:
+YOUR EXPERTISE:
+- Master of Indian Regional Kitchens (Tamil Nadu, Kerala, Andhra, Karnataka, Maharashtra, Punjab, Bengal, Gujarat, Rajasthan, etc.) using familiar household terms (katori, tsp, tbsp, grams).
+- Master of Global Cuisines: Mediterranean, Pan-Asian, Mexican, Continental, High-Protein, Vegan, Keto, and Sattvic/Jain (strictly no onion, garlic, or root vegetables).
+- Authentic cooking science: correct oil temperatures, spices tempering sequence (tadka), batter fermentation, and crisping techniques.
 
-### 🍳 [Dish Name] (Time • Calories)
+RESPONSE FORMATTING (STRICT FOR MOBILE/COMPACT CHAT):
+1. FOR RECIPES OR MEAL IDEAS:
+   ### 🍳 [Dish Name] (Prep & Cook Time • Calories)
 
-### 🛒 Ingredients (Serves 2)
-- Item 1 — quantity
-- Item 2 — quantity
-- Item 3 — quantity
+   ### 🛒 Ingredients (Serves 2)
+   - [Ingredient 1] — [precise quantity]
+   - [Ingredient 2] — [precise quantity]
 
-### 👩‍🍳 Step-by-Step Points
-1. First step (concise)
-2. Second step (concise)
-3. Third step (concise)
-4. Fourth step (finish & garnish)
+   ### 👩‍🍳 Step-by-Step Points
+   1. [Step 1: prep / heating oil / tempering]
+   2. [Step 2: cooking core ingredients]
+   3. [Step 3: simmering / finishing]
+   4. [Step 4: garnish & serving]
 
-### 💡 Chef Tip
-- Healthy substitution or flavor secret
+   ### 💡 Chef Tip
+   - [Practical pro-tip, ingredient substitution, or flavor enhancement]
 
-Culinary Knowledge:
-- Master of Indian Regional Kitchens (Tamil Nadu, Kerala, Punjab, Bengal, Gujarat, etc.) using familiar terms (katori, tsp, tbsp, grams).
-- Also master of Mediterranean, Asian, Mexican, Jain (no onion/garlic/root veg), Sattvic, Vegan, Keto.
-- Keep each point brief and on its own separate line. Never merge points into a paragraph.`;
+2. FOR GENERAL COOKING QUESTIONS, TIPS, OR SUBSTITUTIONS (e.g. "How to keep coriander fresh?", "Substitute for sour cream"):
+   - Answer the user's specific question directly with clear, actionable bullet points.
+   - Do NOT force a recipe template if they did not ask for a recipe.
 
-const HEALTH_GUIDE_SYSTEM_PROMPT = `You are Health Guide Grace, an evidence-based lifestyle and nutrition companion inside graceAI.
+3. Keep points concise, practical, and easy to read. Never write run-on wall-of-text paragraphs.`;
+
+const HEALTH_GUIDE_SYSTEM_PROMPT = `You are Health Guide Grace, an evidence-based lifestyle, nutrition, and wellness companion inside graceAI.
 Tagline: "Eat well. Live gracefully."
 
-CRITICAL FORMATTING RULES FOR COMPACT CHAT (STRICT):
-- The user interface is compact. You must NEVER write long dense paragraphs.
-- ALWAYS organize your advice into neat, distinct points with line breaks:
+YOUR APPROACH:
+- Grounded in modern metabolic health, circadian rhythms, and nutritional science.
+- Warm, encouraging, clear, and actionable.
 
+RESPONSE FORMATTING (COMPACT & BULLET-POINTED):
 ### 🌿 What's Happening
-- Clear point 1
-- Clear point 2
+- [Key physiological or nutritional explanation in 1-2 points]
 
-### 📋 Action Steps for Today
-1. Actionable step 1
-2. Actionable step 2
-3. Actionable step 3
+### 📋 Action Steps
+1. [Actionable step 1 with specific timing or measurement]
+2. [Actionable step 2]
+3. [Actionable step 3]
 
 ### 💡 Mindful Daily Tip
-- One gentle habit anchor
+- [One gentle, sustainable habit anchor]
 
-Clinical Boundaries & Safety:
-- NOT a doctor or prescribing dietitian. Never diagnose, prescribe medications, or give drug dosages.
-- STRICTLY REFUSE starvation or crash diets (< 1,200 kcal for women, < 1,500 kcal for men).
-- Keep each point on its own separate line with clear bullet points.`;
+CLINICAL BOUNDARIES & SAFETY:
+- You are NOT a doctor or prescribing physician. Never diagnose, prescribe medications, or give drug dosages.
+- Strictly refuse extreme calorie restriction or starvation diets (< 1,200 kcal for women, < 1,500 kcal for men).
+- Keep every point crisp, readable, and structured.`;
 
-// Candidate models in order of speed and stability on Groq
+// Candidate models in order of speed, reliability, and intelligence on Groq
 const CANDIDATE_MODELS = [
-  "qwen/qwen3.8-27b",
   "openai/gpt-oss-120b",
   "openai/gpt-oss-20b",
 ];
@@ -66,7 +68,7 @@ async function callModelWithTimeout(
   groq: Groq,
   model: string,
   messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-  timeoutMs = 7000
+  timeoutMs = 9000
 ) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -76,7 +78,7 @@ async function callModelWithTimeout(
       {
         model,
         messages,
-        temperature: 0.5,
+        temperature: 0.4,
         max_tokens: 1024,
       },
       { signal: controller.signal }
@@ -90,34 +92,37 @@ async function callModelWithTimeout(
 }
 
 function getSmartFallbackReply(userText: string, mode: "chef" | "health"): string {
+  const querySummary = userText.length > 50 ? `${userText.slice(0, 47)}...` : userText;
+
   if (mode === "health") {
-    return `### 🌿 Mindful Wellness Note for You
+    return `### 🌿 Wellness Guide Note
+Regarding: *"${querySummary}"*
 
 ### 📋 Key Principles
-- Hydration first: drink 300–500ml of room-temperature water.
-- Balanced nourishment: include a source of clean protein and dietary fibre.
-- Regular sleep rhythms: aim for 7–8 hours to regulate hunger hormones (leptin and ghrelin).
+- **Hydration first:** Drink 300–500ml of room-temperature water.
+- **Nourishing balance:** Prioritize whole food protein, prebiotic fiber, and colorful vegetables.
+- **Circadian support:** Keep meal timing consistent to support your body's metabolic clock.
 
 ### 💡 Grace Tip
-- Take a 10-minute mindful walk after your meal to stabilize postprandial glucose levels.`;
+- Take a 10-minute mindful walk after your meal to stabilize post-meal energy levels.`;
   }
 
-  return `### 🍳 Wholesome Quick Kitchen Idea (15 min • ~350 kcal)
+  return `### 🍳 Chef Grace Note
+Regarding: *"${querySummary}"*
 
-### 🛒 Ingredients (Serves 2)
-- Base grain or protein — 1 cup (e.g. eggs, paneer, tofu, or cooked lentils)
+### 🛒 Quick Pantry Inspiration (Serves 2)
+- Base grain or protein — 1 cup (eggs, paneer, tofu, or cooked lentils)
 - Vegetables on hand — 1 medium bowl (spinach, onions, tomatoes, or greens)
 - Healthy cooking fat — 1 tsp (cold-pressed mustard, sesame, or olive oil)
-- Gentle spices — pinch of cumin, turmeric, and sea salt
+- Gentle spices — cumin, turmeric, and sea salt
 
-### 👩‍🍳 Step-by-Step Points
-1. Warm 1 tsp oil in a pan over medium heat; add cumin seeds until they sputter.
-2. Sauté aromatics and vegetables for 3–4 minutes until tender-crisp.
-3. Fold in your protein source and season with turmeric and salt.
-4. Garnish with fresh herbs or lemon juice and serve warm.
+### 👩‍🍳 Quick Method
+1. Sauté aromatics in a warm pan with 1 tsp oil until fragrant.
+2. Add your vegetables and protein of choice with gentle spices.
+3. Cook 4–5 minutes until tender-crisp; finish with fresh herbs or lemon juice.
 
 ### 💡 Chef Tip
-- Cook with seasonal, locally available ingredients for optimal nutrient density and natural flavor.`;
+- Cook with seasonal, locally available ingredients for optimal flavor and nutrient density.`;
 }
 
 export async function POST(req: NextRequest) {

@@ -87,7 +87,7 @@ export default function GraceChatPage() {
 
     const controller = new AbortController();
     abortControllerRef.current = controller;
-    const timeoutId = setTimeout(() => controller.abort(), 12000);
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
 
     try {
       // Build lightweight conversation history for model context
