@@ -41,14 +41,14 @@ export function WeatherCuisineBanner({
   const [searchCity, setSearchCity] = useState("");
   const [activeDishIdx, setActiveDishIdx] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date());
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
   const [minutesSinceRefresh, setMinutesSinceRefresh] = useState(0);
 
   // Keep refs for active query parameters so the 30-min recurring timer can use them
   const currentCityRef = useRef<string | undefined>(undefined);
   const currentLatRef = useRef<number | undefined>(undefined);
   const currentLonRef = useRef<number | undefined>(undefined);
-  const lastFetchTimeRef = useRef<number>(Date.now());
+  const lastFetchTimeRef = useRef<number>(0);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -126,6 +126,9 @@ export function WeatherCuisineBanner({
 
   // Initial load: Check saved place or browser GPS
   useEffect(() => {
+    lastFetchTimeRef.current = Date.now();
+    setLastRefreshedAt(new Date());
+
     if (typeof window !== "undefined") {
       let savedPlace: { city?: string; lat?: number; lon?: number } | null = null;
       try {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { unstable_rethrow } from "next/navigation";
 import {
   fetchLiveWeather,
   generateWeatherRecommendations,
@@ -10,7 +11,7 @@ import { getMealSlotInfo } from "@/lib/date-utils";
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    const searchParams = req.nextUrl.searchParams;
     const latParam = searchParams.get("lat");
     const lonParam = searchParams.get("lon");
     const cityParam = searchParams.get("city");
@@ -50,6 +51,7 @@ export async function GET(req: NextRequest) {
           }
         }
       } catch (geoErr) {
+        unstable_rethrow(geoErr);
         console.warn("Geocoding lookup failed:", geoErr);
       }
     } else {
@@ -73,6 +75,7 @@ export async function GET(req: NextRequest) {
           }
         }
       } catch (ipErr) {
+        unstable_rethrow(ipErr);
         console.warn("IP geolocation fallback failed:", ipErr);
       }
     }
@@ -128,6 +131,7 @@ export async function GET(req: NextRequest) {
       refreshIntervalMinutes: 30,
     });
   } catch (error: unknown) {
+    unstable_rethrow(error);
     console.error("Weather Recommendation API Error:", error);
     return NextResponse.json(
       { error: "Could not generate weather recommendations." },
