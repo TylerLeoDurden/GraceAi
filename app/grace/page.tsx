@@ -16,6 +16,7 @@ import {
   Clock,
   CheckCircle2,
   Loader2,
+  PhoneCall,
 } from "lucide-react";
 import { FormattedMessage } from "@/components/formatted-message";
 import { useRealTime } from "@/lib/use-real-time";
@@ -28,6 +29,7 @@ interface Message {
   mode: "chef" | "health";
   alert?: boolean;
   helpline?: string;
+  emergencyInfo?: any;
   feedback?: "up" | "down";
 }
 
@@ -177,6 +179,7 @@ export default function GraceChatPage() {
           mode,
           alert: Boolean(data.alert),
           helpline: data.helpline,
+          emergencyInfo: data.emergencyInfo,
         },
       ]);
     } catch (err: unknown) {
@@ -348,8 +351,28 @@ export default function GraceChatPage() {
               <FormattedMessage content={m.content} isUser={m.role === "user"} />
 
               {m.helpline && (
-                <div className="pt-2 border-t border-[var(--danger)]/30 text-xs font-semibold text-[var(--danger)]">
-                  {m.helpline}
+                <div className="pt-2 border-t border-[var(--danger)]/30 text-xs font-semibold text-[var(--danger)] space-y-2">
+                  <div>{m.helpline}</div>
+                  {m.emergencyInfo && (
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      <a
+                        href={`tel:${m.emergencyInfo.primaryEmergency}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--danger)] text-white text-xs font-bold hover:opacity-90 shadow-xs"
+                      >
+                        <PhoneCall className="w-3.5 h-3.5 animate-bounce" />
+                        <span>Call {m.emergencyInfo.primaryEmergency} ({m.emergencyInfo.countryName})</span>
+                      </a>
+                      {m.emergencyInfo.mentalHealth?.number && (
+                        <a
+                          href={`tel:${m.emergencyInfo.mentalHealth.number.replace(/\D/g, "")}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--primary)] text-white text-xs font-bold hover:opacity-90 shadow-xs"
+                        >
+                          <PhoneCall className="w-3.5 h-3.5" />
+                          <span>Call {m.emergencyInfo.mentalHealth.name} ({m.emergencyInfo.mentalHealth.number})</span>
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 

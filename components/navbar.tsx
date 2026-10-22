@@ -7,6 +7,7 @@ import { useTheme } from "./theme-provider";
 import { LiveClockWidget } from "./live-clock-widget";
 import { useAuth } from "@/lib/auth-context";
 import { signOut } from "@/lib/firebase";
+import { EmergencyModal, useEmergencyLocation } from "./emergency-modal";
 import {
   Sun,
   Moon,
@@ -39,6 +40,7 @@ export function Navbar() {
   const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const { emergencyInfo } = useEmergencyLocation();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -120,9 +122,11 @@ export function Navbar() {
             <button
               onClick={() => setEmergencyModalOpen(true)}
               className="hidden lg:flex items-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--danger)] px-3 py-2 rounded-xl border border-[var(--border)] hover:border-[var(--danger)]/40 transition-colors"
+              title={`Emergency in ${emergencyInfo.countryName}: Call ${emergencyInfo.primaryEmergency}`}
             >
               <ShieldAlert className="w-3.5 h-3.5 text-[var(--danger)]" />
-              <span>Helpline</span>
+              <span>SOS {emergencyInfo.primaryEmergency}</span>
+              <span className="text-[11px]">{emergencyInfo.flagEmoji}</span>
             </button>
 
             {/* ─── AUTH AREA ─────────────────────────────────────────── */}
@@ -310,59 +314,20 @@ export function Navbar() {
                 className="text-xs text-[var(--text-muted)] hover:text-[var(--danger)] py-2 text-center flex items-center justify-center gap-1.5"
               >
                 <ShieldAlert className="w-3.5 h-3.5 text-[var(--danger)]" />
-                <span>Crisis & Medical Emergency Helplines</span>
+                <span>
+                  Emergency {emergencyInfo.flagEmoji} {emergencyInfo.primaryEmergency} ({emergencyInfo.countryName})
+                </span>
               </button>
             </div>
           </div>
         )}
       </header>
 
-      {/* Emergency Modal */}
-      {emergencyModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="max-w-md w-full bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 shadow-2xl relative">
-            <button
-              onClick={() => setEmergencyModalOpen(false)}
-              className="absolute top-4 right-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)] rounded-full hover:bg-[var(--surface-elevated)]"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <div className="w-12 h-12 rounded-2xl bg-[var(--danger)]/15 text-[var(--danger)] flex items-center justify-center mb-4">
-              <ShieldAlert className="w-6 h-6" />
-            </div>
-            <h3 className="font-serif text-2xl font-semibold text-[var(--text)] mb-2">
-              Health & Emergency Guidelines
-            </h3>
-            <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-4">
-              graceAI provides culinary and general wellness education. It does not replace medical consultation, diagnoses, or prescriptions.
-            </p>
-            <div className="space-y-3 bg-[var(--surface-elevated)] p-4 rounded-2xl mb-5 text-sm">
-              <div className="flex justify-between items-center pb-2 border-b border-[var(--border)]">
-                <span className="font-medium text-[var(--text)]">India Emergency Services:</span>
-                <a href="tel:112" className="font-bold text-[var(--danger)] hover:underline">
-                  112
-                </a>
-              </div>
-              <div className="flex justify-between items-center pb-2 border-b border-[var(--border)]">
-                <span className="font-medium text-[var(--text)]">Tele-MANAS Mental Health:</span>
-                <a href="tel:14416" className="font-bold text-[var(--primary)] hover:underline">
-                  14416 / 1800 891 4416
-                </a>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium text-[var(--text)]">US / UK Emergency:</span>
-                <span className="font-bold text-[var(--text)]">911 / 999</span>
-              </div>
-            </div>
-            <button
-              onClick={() => setEmergencyModalOpen(false)}
-              className="w-full py-3 rounded-xl bg-[var(--text)] text-[var(--background)] font-medium hover:opacity-90 transition-opacity"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Dynamic Location-Aware Emergency Modal */}
+      <EmergencyModal
+        isOpen={emergencyModalOpen}
+        onClose={() => setEmergencyModalOpen(false)}
+      />
     </>
   );
 }

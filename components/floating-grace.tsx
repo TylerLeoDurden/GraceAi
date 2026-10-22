@@ -14,6 +14,7 @@ import {
   Maximize2,
   Minimize2,
   RotateCcw,
+  PhoneCall,
 } from "lucide-react";
 import { FormattedMessage } from "./formatted-message";
 import { getRealTimeStatus } from "@/lib/date-utils";
@@ -28,7 +29,15 @@ export function FloatingGrace() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; text: string; alert?: boolean }>>([
+  const [messages, setMessages] = useState<
+    Array<{
+      role: "user" | "assistant";
+      text: string;
+      alert?: boolean;
+      helpline?: string;
+      emergencyInfo?: any;
+    }>
+  >([
     {
       role: "assistant",
       text: "Hello! Tell me what ingredients you have in your kitchen, and I will write a simple point-by-point recipe for you.",
@@ -91,6 +100,8 @@ export function FloatingGrace() {
           role: "assistant",
           text: data.reply || "I am here to guide your culinary journey.",
           alert: Boolean(data.alert),
+          helpline: data.helpline,
+          emergencyInfo: data.emergencyInfo,
         },
       ]);
     } catch (err: unknown) {
@@ -243,6 +254,21 @@ export function FloatingGrace() {
                   )}
 
                   <FormattedMessage content={m.text} isUser={m.role === "user"} />
+
+                  {m.helpline && (
+                    <div className="pt-2 mt-2 border-t border-[var(--danger)]/30 text-[11px] font-semibold text-[var(--danger)] space-y-1.5">
+                      <div>{m.helpline}</div>
+                      {m.emergencyInfo && (
+                        <a
+                          href={`tel:${m.emergencyInfo.primaryEmergency}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--danger)] text-white font-bold hover:opacity-90 transition-opacity"
+                        >
+                          <PhoneCall className="w-3 h-3" />
+                          <span>Call {m.emergencyInfo.primaryEmergency} ({m.emergencyInfo.countryName})</span>
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

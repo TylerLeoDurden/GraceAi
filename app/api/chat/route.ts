@@ -172,8 +172,15 @@ export async function POST(req: NextRequest) {
 
     const userText = message.trim().replace(/[\\]+$/, "").trim();
 
-    // 1. Safety triage before calling LLM
-    const safety = checkSafety(userText);
+    const userLocationHint =
+      weatherContext?.country ||
+      weatherContext?.city ||
+      req.headers.get("x-vercel-ip-country") ||
+      req.headers.get("cf-ipcountry") ||
+      undefined;
+
+    // 1. Safety triage before calling LLM (tailored to user's location)
+    const safety = checkSafety(userText, userLocationHint);
 
     if (safety.isEmergency) {
       return NextResponse.json({
@@ -183,6 +190,7 @@ export async function POST(req: NextRequest) {
         alert: true,
         emergencyType: safety.emergencyType,
         helpline: safety.helpline,
+        emergencyInfo: safety.emergencyInfo,
         mode,
       });
     }

@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Heart, Shield, PhoneCall } from "lucide-react";
-
+import { EmergencyModal, useEmergencyLocation } from "./emergency-modal";
 
 export function Footer() {
+  const { emergencyInfo } = useEmergencyLocation();
+  const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
+
   return (
     <footer className="w-full border-t border-[var(--border)] bg-[var(--surface)] text-[var(--text)] transition-colors duration-200 mt-20">
       {/* Medical Disclaimer Banner */}
@@ -16,15 +20,34 @@ export function Footer() {
               <strong className="text-[var(--text)]">Medical Disclaimer:</strong> graceAI is an educational wellness and culinary companion, not a medical device. Always consult a physician or registered dietitian before changing your medical or diet regimen.
             </p>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <span className="flex items-center gap-1 text-[var(--danger)] font-medium">
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap justify-center md:justify-end">
+            <span className="text-[11px] text-[var(--text-muted)] flex items-center gap-1">
+              <span>{emergencyInfo.flagEmoji}</span>
+              <span>{emergencyInfo.countryName}:</span>
+            </span>
+            <a
+              href={`tel:${emergencyInfo.primaryEmergency}`}
+              className="flex items-center gap-1 text-[var(--danger)] font-bold hover:underline"
+              title={`Call ${emergencyInfo.countryName} Emergency: ${emergencyInfo.primaryEmergency}`}
+            >
               <PhoneCall className="w-3.5 h-3.5" />
-              Emergency: 112
-            </span>
+              Emergency: {emergencyInfo.primaryEmergency}
+            </a>
             <span>•</span>
-            <span className="text-[var(--primary)] font-medium">
-              Tele-MANAS: 14416
-            </span>
+            <a
+              href={`tel:${emergencyInfo.mentalHealth.number.replace(/\D/g, "")}`}
+              className="text-[var(--primary)] font-semibold hover:underline"
+              title={`Call ${emergencyInfo.mentalHealth.name}: ${emergencyInfo.mentalHealth.number}`}
+            >
+              {emergencyInfo.mentalHealth.name}: {emergencyInfo.mentalHealth.number}
+            </a>
+            <button
+              type="button"
+              onClick={() => setEmergencyModalOpen(true)}
+              className="text-[11px] underline text-[var(--text-muted)] hover:text-[var(--text)] ml-1"
+            >
+              (All Numbers)
+            </button>
           </div>
         </div>
       </div>
@@ -151,6 +174,11 @@ export function Footer() {
           </div>
         </div>
       </div>
+
+      <EmergencyModal
+        isOpen={emergencyModalOpen}
+        onClose={() => setEmergencyModalOpen(false)}
+      />
     </footer>
   );
 }

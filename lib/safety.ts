@@ -3,12 +3,15 @@
  * Enforces emergency triage, eating disorder safeguards, and allergen security in code.
  */
 
+import { getEmergencyInfo, EmergencyContactInfo } from "./emergency-service";
+
 export interface SafetyCheckResult {
   isEmergency: boolean;
   isDisorderedEating: boolean;
   emergencyType?: "medical" | "mental_health" | "allergic_reaction";
   message?: string;
   helpline?: string;
+  emergencyInfo?: EmergencyContactInfo;
 }
 
 const MEDICAL_EMERGENCY_PATTERNS = [
@@ -57,8 +60,9 @@ const DISORDERED_EATING_PATTERNS = [
 /**
  * Validates user input before sending to any AI endpoint or plan generator
  */
-export function checkSafety(userInput: string): SafetyCheckResult {
+export function checkSafety(userInput: string, countryOrLocation?: string): SafetyCheckResult {
   const text = userInput.trim().toLowerCase();
+  const emergencyInfo = getEmergencyInfo(countryOrLocation);
 
   // 1. Mental health crisis check
   for (const pattern of MENTAL_HEALTH_CRISIS_PATTERNS) {
@@ -69,8 +73,8 @@ export function checkSafety(userInput: string): SafetyCheckResult {
         emergencyType: "mental_health",
         message:
           "If you are going through a difficult time or having thoughts of self-harm, please know that you are not alone. Free, confidential support is available 24/7.",
-        helpline:
-          "India: Tele-MANAS at 14416 (or 1800 891 4416) | US/Canada: 988 | UK: 111 | Emergency: 112",
+        helpline: `${emergencyInfo.flagEmoji} ${emergencyInfo.countryName}: ${emergencyInfo.mentalHealth.name} at ${emergencyInfo.mentalHealth.number} | General Emergency: ${emergencyInfo.primaryEmergency}`,
+        emergencyInfo,
       };
     }
   }
@@ -84,7 +88,8 @@ export function checkSafety(userInput: string): SafetyCheckResult {
         emergencyType: "medical",
         message:
           "These symptoms may indicate an urgent medical emergency requiring immediate professional care. Please contact emergency services right now.",
-        helpline: "India Emergency: 112 | US/Canada: 911 | UK: 999",
+        helpline: `${emergencyInfo.flagEmoji} ${emergencyInfo.countryName} Emergency: ${emergencyInfo.primaryEmergency} | Ambulance: ${emergencyInfo.medicalEmergency} | Mental Health: ${emergencyInfo.mentalHealth.number}`,
+        emergencyInfo,
       };
     }
   }

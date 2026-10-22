@@ -21,6 +21,7 @@ import {
   WeatherDishRecommendation,
   POPULAR_CITIES,
 } from "@/lib/weather-service";
+import { dispatchLocationChange } from "@/lib/emergency-service";
 
 interface WeatherCuisineBannerProps {
   onSelectDishForPlanner?: (dish: WeatherDishRecommendation) => void;
@@ -89,7 +90,7 @@ export function WeatherCuisineBanner({
           currentLatRef.current = payload.location.latitude;
           currentLonRef.current = payload.location.longitude;
 
-          // Persist user's place preference
+          // Persist user's place preference and notify emergency service
           if (typeof window !== "undefined") {
             try {
               localStorage.setItem(
@@ -106,6 +107,14 @@ export function WeatherCuisineBanner({
               // Ignore storage quotas
             }
           }
+
+          dispatchLocationChange({
+            city: payload.location.city,
+            region: payload.location.region,
+            country: payload.location.country,
+            latitude: payload.location.latitude,
+            longitude: payload.location.longitude,
+          });
 
           if (isManual) {
             triggerToast(

@@ -27,7 +27,9 @@ import {
   ExternalLink,
   ShieldCheck,
   ArrowRight,
+  PhoneCall,
 } from "lucide-react";
+import { useEmergencyLocation } from "@/components/emergency-modal";
 import { CareAnalysisResponse } from "@/app/api/care/analyze/route";
 
 interface ConditionGuide {
@@ -622,6 +624,7 @@ const QUICK_TOPICS = [
 ];
 
 export default function HealthCarePage() {
+  const { emergencyInfo } = useEmergencyLocation();
   const [activeTab, setActiveTab] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [symptomInput, setSymptomInput] = useState("");
@@ -1121,6 +1124,18 @@ export default function HealthCarePage() {
                     </li>
                   ))}
                 </ul>
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-[var(--danger)]/20 mt-3">
+                  <span className="text-[11px] text-[var(--danger)] font-medium">
+                    Experiencing severe acute symptoms?
+                  </span>
+                  <a
+                    href={`tel:${emergencyInfo.primaryEmergency}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--danger)] text-white text-xs font-bold hover:opacity-90 transition-opacity self-start sm:self-auto shadow-xs"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5" />
+                    <span>Call {emergencyInfo.primaryEmergency} ({emergencyInfo.countryName})</span>
+                  </a>
+                </div>
               </div>
             </div>
 
