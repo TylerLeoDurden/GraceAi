@@ -19,6 +19,7 @@ export interface FoodPortion {
 }
 
 export interface DishNutritionResult {
+  isFood?: boolean;
   recipeTitle: string;
   kcal: number;
   protein: string;
@@ -1001,6 +1002,7 @@ export function calculateFromCanonicalDatabase(text: string): DishNutritionResul
   const suggestions = generateMealSuggestion(finalKcal, totalProtein, totalFiber);
 
   return {
+    isFood: true,
     recipeTitle: formatTitleCase(trimmed),
     kcal: finalKcal,
     protein: `${Math.round(totalProtein)}g`,

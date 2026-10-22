@@ -44,6 +44,7 @@ export function WeatherCuisineBanner({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
   const [minutesSinceRefresh, setMinutesSinceRefresh] = useState(0);
+  const [liveTimeString, setLiveTimeString] = useState<string>("");
 
   // Keep refs for active query parameters so the 30-min recurring timer can use them
   const currentCityRef = useRef<string | undefined>(undefined);
@@ -71,6 +72,14 @@ export function WeatherCuisineBanner({
           params.set("lon", lon.toString());
         } else if (city) {
           params.set("city", city);
+        }
+
+        const clientTz =
+          typeof Intl !== "undefined"
+            ? Intl.DateTimeFormat().resolvedOptions().timeZone
+            : undefined;
+        if (clientTz) {
+          params.set("tz", clientTz);
         }
 
         if (params.toString()) {
@@ -211,6 +220,38 @@ export function WeatherCuisineBanner({
     };
   }, [loadWeatherRecommendations]);
 
+  // Live real-world ticking clock synchronized with the location's real-world timezone
+  useEffect(() => {
+    const updateLiveClock = () => {
+      const tz =
+        data?.timeContext?.timezone ||
+        (typeof Intl !== "undefined"
+          ? Intl.DateTimeFormat().resolvedOptions().timeZone
+          : "Asia/Kolkata");
+      try {
+        const str = new Intl.DateTimeFormat("en-US", {
+          timeZone: tz,
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        }).format(new Date());
+        setLiveTimeString(str);
+      } catch {
+        setLiveTimeString(
+          new Date().toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          })
+        );
+      }
+    };
+
+    updateLiveClock();
+    const clockInterval = setInterval(updateLiveClock, 1000);
+    return () => clearInterval(clockInterval);
+  }, [data?.timeContext?.timezone]);
+
   const handleSelectCity = (city: string) => {
     setShowCityPicker(false);
     currentCityRef.current = city;
@@ -296,9 +337,20 @@ export function WeatherCuisineBanner({
 
               <span className="text-[var(--border)]">•</span>
 
-              <span className="text-xs font-semibold text-[var(--text-muted)]">
-                {timeContext.timeString}
-              </span>
+              <div
+                className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text)]"
+                title={`Live Real-World Time (${timeContext.timezone || "Local"})`}
+              >
+                <Clock className="w-3.5 h-3.5 text-[var(--primary)] shrink-0" />
+                <span className="tabular-nums font-mono">
+                  {liveTimeString || timeContext.timeString}
+                </span>
+                {timeContext.timezone && (
+                  <span className="text-[10px] text-[var(--text-muted)] font-normal hidden sm:inline">
+                    ({timeContext.timezone.split("/").pop()?.replace(/_/g, " ")})
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 mt-0.5">

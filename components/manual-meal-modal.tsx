@@ -10,6 +10,8 @@ import {
   Info,
   CheckCircle2,
   SlidersHorizontal,
+  AlertCircle,
+  ShieldAlert,
 } from "lucide-react";
 import { AnalyzedMeal } from "@/app/api/nutrition/analyze/route";
 
@@ -81,6 +83,16 @@ export function ManualMealModal({
       });
 
       const data: AnalyzedMeal = await res.json();
+
+      if (!res.ok || data.isFood === false) {
+        setErrorMsg(
+          data.error ||
+          `"${textToAnalyze}" does not appear to be an edible food or drink. People and non-food items do not have calories.`
+        );
+        setAnalyzedResult(null);
+        return;
+      }
+
       setAnalyzedResult(data);
       setEditableKcal(data.kcal);
       setEditableProtein(data.protein);
@@ -89,7 +101,8 @@ export function ManualMealModal({
       setIsFineTuning(false);
     } catch (err) {
       console.error("Meal analysis error:", err);
-      setErrorMsg("Failed to analyze meal. Please try again.");
+      setErrorMsg("Failed to analyze meal. Please check your connection and try again.");
+      setAnalyzedResult(null);
     } finally {
       setIsAnalyzing(false);
     }
@@ -162,7 +175,15 @@ export function ManualMealModal({
               className="w-full p-3.5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] text-xs sm:text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary)] transition-all resize-none"
             />
             {errorMsg && (
-              <p className="text-xs text-[var(--danger)] font-medium">{errorMsg}</p>
+              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5 animate-in fade-in">
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-semibold text-xs leading-relaxed">{errorMsg}</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    graceAI Groq AI Food Validator: People, personal names, and non-food items do not have culinary calories.
+                  </p>
+                </div>
+              </div>
             )}
           </div>
 

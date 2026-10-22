@@ -16,8 +16,9 @@ export async function GET(req: NextRequest) {
     const lonParam = searchParams.get("lon");
     const cityParam = searchParams.get("city");
     const slotOverride = searchParams.get("slot");
+    const clientTz = searchParams.get("tz");
 
-    let location: LocationData = DEFAULT_LOCATION;
+    let location: LocationData = { ...DEFAULT_LOCATION };
 
     // 1. If explicit coordinates supplied
     if (latParam && lonParam) {
@@ -30,6 +31,8 @@ export async function GET(req: NextRequest) {
           country: "Live",
           latitude: lat,
           longitude: lon,
+          timezone: clientTz || DEFAULT_LOCATION.timezone,
+          utcOffsetSeconds: DEFAULT_LOCATION.utcOffsetSeconds,
         };
       }
     } else if (cityParam) {
@@ -47,6 +50,7 @@ export async function GET(req: NextRequest) {
               country: first.country || "Global",
               latitude: first.latitude,
               longitude: first.longitude,
+              timezone: first.timezone || clientTz || DEFAULT_LOCATION.timezone,
             };
           }
         }
@@ -71,6 +75,7 @@ export async function GET(req: NextRequest) {
               country: ipData.countryName || "India",
               latitude: ipData.latitude,
               longitude: ipData.longitude,
+              timezone: ipData.timeZone || clientTz || DEFAULT_LOCATION.timezone,
             };
           }
         }
@@ -80,10 +85,14 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 2. Fetch real-time weather from Open-Meteo
+    // 2. Fetch real-time weather from Open-Meteo with auto timezone
     let weather: WeatherData;
     try {
       weather = await fetchLiveWeather(location.latitude, location.longitude);
+      if (weather.timezone) {
+        location.timezone = weather.timezone;
+        location.utcOffsetSeconds = weather.utcOffsetSeconds;
+      }
     } catch {
       weather = {
         temperatureC: 28,
@@ -95,15 +104,41 @@ export async function GET(req: NextRequest) {
         isDay: true,
         windSpeed: 10,
         icon: "🌤️",
+        timezone: location.timezone || clientTz || DEFAULT_LOCATION.timezone,
+        utcOffsetSeconds: location.utcOffsetSeconds ?? DEFAULT_LOCATION.utcOffsetSeconds,
       };
     }
 
-    // 3. Determine time of day and active meal window
+    // 3. Determine real-world local time for this location's timezone
+    const targetTimezone = weather.timezone || location.timezone || clientTz || "Asia/Kolkata";
     const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const slotInfo = getMealSlotInfo(hours, minutes);
 
+    // Accurately extract local hour & minute in the location's real-world timezone
+    const timeParts = new Intl.DateTimeFormat("en-US", {
+      timeZone: targetTimezone,
+      hour: "numeric",
+      minute: "numeric",
+      hour12: false,
+    }).formatToParts(now);
+
+    const hours = parseInt(timeParts.find((p) => p.type === "hour")?.value || "0", 10);
+    const minutes = parseInt(timeParts.find((p) => p.type === "minute")?.value || "0", 10);
+
+    const timeString = new Intl.DateTimeFormat("en-US", {
+      timeZone: targetTimezone,
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(now);
+
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      timeZone: targetTimezone,
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+    }).format(now);
+
+    const slotInfo = getMealSlotInfo(hours, minutes);
     const activeSlot = (slotOverride as "Breakfast" | "Lunch" | "Snack" | "Dinner") || slotInfo.activeSlot;
 
     let timeOfDay: "morning" | "afternoon" | "evening" | "night" = "morning";
@@ -111,10 +146,7 @@ export async function GET(req: NextRequest) {
     else if (hours >= 16 && hours < 21) timeOfDay = "evening";
     else if (hours >= 21 || hours < 5) timeOfDay = "night";
 
-    const timeString = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
-    const formattedDate = now.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
-
-    // 4. Generate recommendations tailored to Place + Weather + Time
+    // 4. Generate recommendations tailored to Place + Weather + Real-World Time
     const recommendations = generateWeatherRecommendations(weather, activeSlot, location);
 
     return NextResponse.json({
@@ -125,6 +157,8 @@ export async function GET(req: NextRequest) {
         activeSlot,
         timeString,
         formattedDate,
+        timezone: targetTimezone,
+        utcOffsetSeconds: weather.utcOffsetSeconds ?? location.utcOffsetSeconds ?? 19800,
       },
       recommendations,
       updatedAt: now.toISOString(),

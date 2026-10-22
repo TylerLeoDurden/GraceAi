@@ -16,6 +16,8 @@ export interface LocationData {
   country: string;
   latitude: number;
   longitude: number;
+  timezone?: string;
+  utcOffsetSeconds?: number;
 }
 
 export interface WeatherData {
@@ -28,6 +30,9 @@ export interface WeatherData {
   isDay: boolean;
   windSpeed: number;
   icon: string;
+  timezone?: string;
+  localTime?: string;
+  utcOffsetSeconds?: number;
 }
 
 export interface WeatherDishRecommendation {
@@ -54,6 +59,8 @@ export interface WeatherCulinaryPayload {
     activeSlot: "Breakfast" | "Lunch" | "Snack" | "Dinner";
     timeString: string;
     formattedDate: string;
+    timezone?: string;
+    utcOffsetSeconds?: number;
   };
   recommendations: WeatherDishRecommendation[];
 }
@@ -65,18 +72,20 @@ export const DEFAULT_LOCATION: LocationData = {
   country: "India",
   latitude: 13.0827,
   longitude: 80.2707,
+  timezone: "Asia/Kolkata",
+  utcOffsetSeconds: 19800,
 };
 
-// Popular quick-switch cities across regions
-export const POPULAR_CITIES: Array<{ name: string; region: string; lat: number; lon: number; cuisineFocus: string }> = [
-  { name: "Chennai", region: "Tamil Nadu, India", lat: 13.0827, lon: 80.2707, cuisineFocus: "South Indian & Coastal" },
-  { name: "Mumbai", region: "Maharashtra, India", lat: 19.0760, lon: 72.8777, cuisineFocus: "Konkan & Maharashtrian" },
-  { name: "New Delhi", region: "Delhi, India", lat: 28.6139, lon: 77.2090, cuisineFocus: "North Indian & Punjabi" },
-  { name: "Bengaluru", region: "Karnataka, India", lat: 12.9716, lon: 77.5946, cuisineFocus: "Karnataka & Modern Healthy" },
-  { name: "Hyderabad", region: "Telangana, India", lat: 17.3850, lon: 78.4867, cuisineFocus: "Deccani & Spiced Tahari" },
-  { name: "Kolkata", region: "West Bengal, India", lat: 22.5726, lon: 88.3639, cuisineFocus: "Bengali Hearth & Steamed Fish" },
-  { name: "London", region: "United Kingdom", lat: 51.5074, lon: -0.1278, cuisineFocus: "Rustic British & Mediterranean" },
-  { name: "New York", region: "United States", lat: 40.7128, lon: -74.0060, cuisineFocus: "Global Hearth & Plant-Forward" },
+// Popular quick-switch cities across regions with known timezones
+export const POPULAR_CITIES: Array<{ name: string; region: string; lat: number; lon: number; cuisineFocus: string; timezone: string }> = [
+  { name: "Chennai", region: "Tamil Nadu, India", lat: 13.0827, lon: 80.2707, cuisineFocus: "South Indian & Coastal", timezone: "Asia/Kolkata" },
+  { name: "Mumbai", region: "Maharashtra, India", lat: 19.0760, lon: 72.8777, cuisineFocus: "Konkan & Maharashtrian", timezone: "Asia/Kolkata" },
+  { name: "New Delhi", region: "Delhi, India", lat: 28.6139, lon: 77.2090, cuisineFocus: "North Indian & Punjabi", timezone: "Asia/Kolkata" },
+  { name: "Bengaluru", region: "Karnataka, India", lat: 12.9716, lon: 77.5946, cuisineFocus: "Karnataka & Modern Healthy", timezone: "Asia/Kolkata" },
+  { name: "Hyderabad", region: "Telangana, India", lat: 17.3850, lon: 78.4867, cuisineFocus: "Deccani & Spiced Tahari", timezone: "Asia/Kolkata" },
+  { name: "Kolkata", region: "West Bengal, India", lat: 22.5726, lon: 88.3639, cuisineFocus: "Bengali Hearth & Steamed Fish", timezone: "Asia/Kolkata" },
+  { name: "London", region: "United Kingdom", lat: 51.5074, lon: -0.1278, cuisineFocus: "Rustic British & Mediterranean", timezone: "Europe/London" },
+  { name: "New York", region: "United States", lat: 40.7128, lon: -74.0060, cuisineFocus: "Global Hearth & Plant-Forward", timezone: "America/New_York" },
 ];
 
 /**
@@ -150,7 +159,7 @@ export function parseWeatherCode(code: number, tempC: number, isDay: boolean): {
  * Fetches real-time weather from Open-Meteo for given coordinates
  */
 export async function fetchLiveWeather(lat: number, lon: number): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=auto`;
   
   const res = await fetch(url, { cache: "no-store" }); // Always fetch live current weather
   if (!res.ok) {
@@ -179,6 +188,9 @@ export async function fetchLiveWeather(lat: number, lon: number): Promise<Weathe
     isDay,
     windSpeed,
     icon,
+    timezone: data.timezone,
+    localTime: current.time,
+    utcOffsetSeconds: data.utc_offset_seconds,
   };
 }
 
