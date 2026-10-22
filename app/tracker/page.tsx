@@ -40,6 +40,8 @@ import {
 } from "@/lib/date-utils";
 import { useRealTime } from "@/lib/use-real-time";
 import { ManualMealModal } from "@/components/manual-meal-modal";
+import { WeatherCuisineBanner } from "@/components/weather-cuisine-banner";
+import { WeatherDishRecommendation } from "@/lib/weather-service";
 import {
   ScheduledMeal,
   MealStatus,
@@ -394,6 +396,39 @@ export default function TrackerPage() {
     );
   };
 
+  // Action: Apply dish recommended based on weather & location
+  const handleApplyWeatherDish = (dish: WeatherDishRecommendation) => {
+    let target = meals.find((m) => m.slot.toLowerCase() === dish.mealSlot.toLowerCase());
+    if (!target) target = meals[0];
+    if (!target) return;
+
+    const now = new Date();
+    const updatedMeals = meals.map((m) =>
+      m.id === target.id
+        ? {
+            ...m,
+            recipeTitle: dish.recipeTitle,
+            kcal: dish.kcal,
+            protein: dish.protein,
+            carbs: dish.carbs,
+            fat: dish.fat,
+            fiber: dish.fiber,
+            origin: dish.origin,
+            healthImpact: dish.weatherRationale,
+            status: "substituted" as MealStatus,
+            loggedAt: now.toISOString(),
+            isAiAnalyzed: true,
+          }
+        : m
+    );
+
+    updateMealsAndReport(
+      updatedMeals,
+      `🌦️ Swapped ${target.slot} to "${dish.recipeTitle}" (${dish.kcal} kcal) for local weather!`,
+      true
+    );
+  };
+
   // Action: Manually refresh report using AI
   const handleRefreshAiReport = async () => {
     if (isReportGenerating) return;
@@ -650,6 +685,9 @@ export default function TrackerPage() {
             </Link>
           </div>
         </div>
+
+        {/* Live Weather & Place Circadian Recommendations */}
+        <WeatherCuisineBanner onSelectDishForPlanner={handleApplyWeatherDish} />
 
         {/* 4 Scheduled Meal Slots */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

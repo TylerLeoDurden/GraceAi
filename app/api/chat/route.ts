@@ -161,7 +161,7 @@ Regarding: *"${querySummary}"*
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { message, mode = "chef", history = [], timeContext } = body;
+    const { message, mode = "chef", history = [], timeContext, weatherContext } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -213,10 +213,14 @@ export async function POST(req: NextRequest) {
       ? `\n\nREAL-WORLD CALENDAR CONTEXT: Today is ${timeContext.dayOfWeek}, ${timeContext.formattedDate}. Current local time: ${timeContext.timeString}. Active meal window: ${timeContext.activeMealSlot}. If the user asks for suggestions or daily guidance, naturally tailor recommendations to this time of day.`
       : "";
 
+    const weatherContextNote = weatherContext
+      ? `\n\nREAL-WORLD PLACE & WEATHER CONTEXT: The user is in ${weatherContext.city || "their local city"}, ${weatherContext.region || ""}, ${weatherContext.country || ""}. Current weather is ${weatherContext.temperatureC}°C, ${weatherContext.conditionLabel || weatherContext.condition}. When recommending dishes or culinary tips, proactively tailor ingredients to this weather (e.g., cooling pitta-calming foods for hot sun, warming thermogenic immunity spices like black pepper/ginger/rasam for rain and cold).`
+      : "";
+
     const systemPrompt =
       (mode === "health"
         ? HEALTH_GUIDE_SYSTEM_PROMPT
-        : CHEF_GRACE_SYSTEM_PROMPT) + timeContextNote;
+        : CHEF_GRACE_SYSTEM_PROMPT) + timeContextNote + weatherContextNote;
 
     // Build chat message history (limiting to last 6 messages for speed and token efficiency)
     const formattedHistory = Array.isArray(history)

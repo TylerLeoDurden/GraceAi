@@ -24,6 +24,8 @@ import { getWeekDays, getRealTimeStatus, WeekInfo, DayInfo, DEFAULT_WEEK_INFO } 
 import { useRealTime } from "@/lib/use-real-time";
 import { ManualMealModal } from "@/components/manual-meal-modal";
 import { GroceryListModal } from "@/components/grocery-list-modal";
+import { WeatherCuisineBanner } from "@/components/weather-cuisine-banner";
+import { WeatherDishRecommendation } from "@/lib/weather-service";
 import { getStoredMeals, saveStoredMeals, computeDeterministicReport, saveStoredReport } from "@/lib/meal-schedule";
 
 interface MealSlot {
@@ -237,6 +239,37 @@ export default function PlannerPage() {
     setTimeout(() => setToastMsg(null), 5500);
   };
 
+  const handleApplyWeatherDish = (dish: WeatherDishRecommendation) => {
+    const targetDayName = (weekOffset === 0 ? weekInfo.days.find((d) => d.isToday)?.dayName : null) || selectedDay;
+    const copy = { ...planData };
+    if (!copy[targetDayName]) return;
+
+    let targetIdx = copy[targetDayName].findIndex(
+      (m) => m.name.toLowerCase() === dish.mealSlot.toLowerCase()
+    );
+    if (targetIdx === -1) targetIdx = 0;
+
+    copy[targetDayName] = copy[targetDayName].map((item, idx) =>
+      idx === targetIdx
+        ? {
+            ...item,
+            recipeTitle: dish.recipeTitle,
+            kcal: dish.kcal,
+            protein: dish.protein,
+            origin: dish.origin,
+            completed: false,
+          }
+        : item
+    );
+    savePlan(copy);
+
+    setToastMsg({
+      text: `🌦️ Applied "${dish.recipeTitle}" (${dish.kcal} kcal) to ${targetDayName}'s ${dish.mealSlot} based on local weather!`,
+      link: "/tracker",
+    });
+    setTimeout(() => setToastMsg(null), 5000);
+  };
+
   const resetWeekPlan = () => {
     if (confirm("Reset this week's meal plan to default balanced menu?")) {
       savePlan(INITIAL_DAYS);
@@ -384,6 +417,9 @@ export default function PlannerPage() {
           </div>
         )}
       </div>
+
+      {/* Live Weather & Place Circadian Recommendations */}
+      <WeatherCuisineBanner onSelectDishForPlanner={handleApplyWeatherDish} />
 
       {/* Real-World Day Selector Ribbon */}
       <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">

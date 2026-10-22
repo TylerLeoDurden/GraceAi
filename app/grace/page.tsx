@@ -59,6 +59,46 @@ export default function GraceChatPage() {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  const [weatherInfo, setWeatherInfo] = useState<{
+    city: string;
+    region: string;
+    tempC: number;
+    condition: string;
+    icon: string;
+  } | null>(null);
+
+  // Load weather context on mount
+  useEffect(() => {
+    fetch("/api/weather/recommend")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.location && data.weather) {
+          setWeatherInfo({
+            city: data.location.city,
+            region: data.location.region,
+            tempC: data.weather.temperatureC,
+            condition: data.weather.conditionLabel,
+            icon: data.weather.icon,
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Listen for prompt query param from external components (e.g. weather cards)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlPrompt = params.get("prompt");
+      if (urlPrompt) {
+        handleSend(urlPrompt);
+        // Clear param from URL without reload
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, "", newUrl);
+      }
+    }
+  }, []);
+
   const handleCancel = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -104,6 +144,14 @@ export default function GraceChatPage() {
           mode,
           history: historyContext,
           timeContext: getRealTimeStatus(new Date()),
+          weatherContext: weatherInfo
+            ? {
+                city: weatherInfo.city,
+                region: weatherInfo.region,
+                temperatureC: weatherInfo.tempC,
+                conditionLabel: weatherInfo.condition,
+              }
+            : undefined,
         }),
         signal: controller.signal,
       });
@@ -243,6 +291,31 @@ export default function GraceChatPage() {
         </div>
       </div>
 
+      {/* Live Weather & Location Context Bar */}
+      {weatherInfo && (
+        <div className="px-4 py-2.5 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-between text-xs text-[var(--text-muted)] animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <span className="text-base">{weatherInfo.icon}</span>
+            <span className="font-semibold text-[var(--text)]">
+              {weatherInfo.city}: {weatherInfo.tempC}°C ({weatherInfo.condition})
+            </span>
+            <span className="hidden sm:inline opacity-70">• Live Weather Context</span>
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              handleSend(
+                `I am in ${weatherInfo.city} where it is currently ${weatherInfo.tempC}°C and ${weatherInfo.condition}. What dishes and seasonal nourishment do you recommend right now?`
+              )
+            }
+            className="text-[11px] font-semibold text-[var(--primary)] hover:underline flex items-center gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Ask Chef Grace for weather dishes</span>
+          </button>
+        </div>
+      )}
+
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-4 sm:p-6 space-y-4 shadow-sm">
         {messages.map((m) => (
@@ -341,6 +414,18 @@ export default function GraceChatPage() {
       <div className="py-2.5 flex gap-2 overflow-x-auto no-scrollbar">
         {mode === "chef" ? (
           <>
+            <button
+              onClick={() =>
+                handleSend(
+                  weatherInfo
+                    ? `What delicious dishes do you recommend for today's weather in ${weatherInfo.city} (${weatherInfo.tempC}°C, ${weatherInfo.condition})?`
+                    : "Recommend authentic dishes that match today's weather and time"
+                )
+              }
+              className="text-xs px-3 py-1.5 rounded-full bg-[var(--surface-elevated)] border border-[var(--primary)] text-[var(--primary)] whitespace-nowrap hover:bg-[var(--primary)] hover:text-white font-semibold transition-colors flex items-center gap-1 shadow-xs"
+            >
+              <span>{weatherInfo ? `${weatherInfo.icon} Best for ${weatherInfo.city}'s Weather` : "🌦️ Recommend for Today's Weather"}</span>
+            </button>
             <button
               onClick={() => handleSend("I have spinach, eggs, and tomatoes. What can I cook?")}
               className="text-xs px-3 py-1.5 rounded-full bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] whitespace-nowrap hover:border-[var(--accent)]"

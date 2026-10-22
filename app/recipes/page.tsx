@@ -15,6 +15,7 @@ import {
   Play,
   RotateCcw,
 } from "lucide-react";
+import { WeatherCuisineBanner } from "@/components/weather-cuisine-banner";
 
 interface Recipe {
   id: string;
@@ -266,6 +267,9 @@ export default function RecipesPage() {
           </p>
         </div>
       </div>
+
+      {/* Live Weather & Place Recipe Guide */}
+      <WeatherCuisineBanner />
 
       {/* Search and Filters Bar */}
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-5 shadow-sm space-y-4">
