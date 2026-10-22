@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   X,
   Sparkles,
   Loader2,
   Check,
   Utensils,
-  Flame,
   Info,
-  RotateCcw,
+  CheckCircle2,
+  SlidersHorizontal,
 } from "lucide-react";
 import { AnalyzedMeal } from "@/app/api/nutrition/analyze/route";
 
@@ -48,10 +48,15 @@ export function ManualMealModal({
   initialMealTitle,
   onSaveMeal,
 }: ManualMealModalProps) {
-  const [mealText, setMealText] = useState("");
+  const [mealText, setMealText] = useState(initialMealTitle || "");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzedResult, setAnalyzedResult] = useState<AnalyzedMeal | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isFineTuning, setIsFineTuning] = useState(false);
+  const [editableKcal, setEditableKcal] = useState<number>(0);
+  const [editableProtein, setEditableProtein] = useState<string>("15g");
+  const [editableCarbs, setEditableCarbs] = useState<string>("50g");
+  const [editableFat, setEditableFat] = useState<string>("14g");
 
   if (!isOpen) return null;
 
@@ -77,6 +82,11 @@ export function ManualMealModal({
 
       const data: AnalyzedMeal = await res.json();
       setAnalyzedResult(data);
+      setEditableKcal(data.kcal);
+      setEditableProtein(data.protein);
+      setEditableCarbs(data.carbs);
+      setEditableFat(data.fat);
+      setIsFineTuning(false);
     } catch (err) {
       console.error("Meal analysis error:", err);
       setErrorMsg("Failed to analyze meal. Please try again.");
@@ -90,10 +100,10 @@ export function ManualMealModal({
 
     onSaveMeal({
       recipeTitle: analyzedResult.recipeTitle,
-      kcal: analyzedResult.kcal,
-      protein: analyzedResult.protein,
-      carbs: analyzedResult.carbs,
-      fat: analyzedResult.fat,
+      kcal: isFineTuning ? Number(editableKcal) || analyzedResult.kcal : analyzedResult.kcal,
+      protein: isFineTuning ? editableProtein : analyzedResult.protein,
+      carbs: isFineTuning ? editableCarbs : analyzedResult.carbs,
+      fat: isFineTuning ? editableFat : analyzedResult.fat,
       fiber: analyzedResult.fiber,
       origin: analyzedResult.origin,
       healthImpact: analyzedResult.healthImpact,
@@ -102,9 +112,14 @@ export function ManualMealModal({
     onClose();
   };
 
+  const adjustKcal = (delta: number) => {
+    setEditableKcal((prev) => Math.max(50, prev + delta));
+    setIsFineTuning(true);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-      <div className="max-w-xl w-full max-h-[90vh] bg-[var(--surface)] border border-[var(--border)] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="max-w-xl w-full max-h-[92vh] bg-[var(--surface)] border border-[var(--border)] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
         {/* Modal Header */}
         <div className="p-5 border-b border-[var(--border)] bg-[var(--surface-elevated)] flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -116,7 +131,7 @@ export function ManualMealModal({
                 {dayName} • {slotName}
               </div>
               <h3 className="font-serif text-lg font-semibold text-[var(--text)]">
-                Enter Custom Meal
+                Calculate & Log Dish Calories
               </h3>
             </div>
           </div>
@@ -133,14 +148,17 @@ export function ManualMealModal({
         <div className="p-6 overflow-y-auto space-y-5 flex-1 text-sm">
           {/* User Input Section */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-[var(--text)] block">
-              Describe what you ate (or want to cook):
+            <label className="text-xs font-semibold text-[var(--text)] flex items-center justify-between">
+              <span>Describe what you ate (or want to cook):</span>
+              <span className="text-[11px] font-normal text-[var(--text-muted)]">
+                ICMR & USDA verified formulas
+              </span>
             </label>
             <textarea
               rows={3}
               value={mealText}
               onChange={(e) => setMealText(e.target.value)}
-              placeholder="e.g. 2 butter rotis with 1 katori dal tadka, roasted papad and sliced onions"
+              placeholder="e.g. 2 rotis with 1 bowl dal tadka, roasted papad and sliced onions"
               className="w-full p-3.5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] text-xs sm:text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary)] transition-all resize-none"
             />
             {errorMsg && (
@@ -151,10 +169,10 @@ export function ManualMealModal({
           {/* Quick Example Chips */}
           <div className="space-y-1.5">
             <span className="text-[11px] font-medium text-[var(--text-muted)] block">
-              Or tap an example to test:
+              Or tap an authentic kitchen example:
             </span>
             <div className="flex flex-wrap gap-1.5">
-              {EXAMPLE_MEALS.slice(0, 4).map((ex) => (
+              {EXAMPLE_MEALS.map((ex) => (
                 <button
                   key={ex}
                   type="button"
@@ -175,72 +193,171 @@ export function ManualMealModal({
             type="button"
             onClick={() => handleAnalyze()}
             disabled={isAnalyzing || !mealText.trim()}
-            className="w-full py-3 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3.5 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isAnalyzing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Grace AI is estimating portions & calories...</span>
+                <span>Computing clinical portions & calories...</span>
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                <span>Calculate Calories & Macros with AI</span>
+                <span>Calculate Accurate Calories & Macros</span>
               </>
             )}
           </button>
 
-          {/* AI Analysis Result Card */}
+          {/* Analysis Result Card */}
           {analyzedResult && (
             <div className="p-5 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] space-y-4 animate-in fade-in slide-in-from-bottom-2">
               <div className="flex items-start justify-between gap-3 pb-3 border-b border-[var(--border)]">
                 <div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-[var(--primary)]">
-                    Calculated by Grace AI • {analyzedResult.origin}
-                  </span>
-                  <h4 className="font-serif text-lg font-semibold text-[var(--text)] mt-0.5">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 dark:text-emerald-400">
+                      {analyzedResult.source === "canonical_database" || analyzedResult.source === "deterministic_cache"
+                        ? "Verified Database • Consistent Standards"
+                        : "AI Verified Standard • 4-4-9 Caloric Law"}
+                    </span>
+                  </div>
+                  <h4 className="font-serif text-lg font-semibold text-[var(--text)]">
                     {analyzedResult.recipeTitle}
                   </h4>
+                  <span className="text-[11px] text-[var(--text-muted)] block mt-0.5">
+                    {analyzedResult.origin} Cuisine
+                  </span>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="font-serif text-2xl font-bold text-[var(--primary)]">
-                    {analyzedResult.kcal}
-                  </span>
-                  <span className="text-xs text-[var(--text-muted)] block">kcal</span>
+                  <div className="flex items-baseline justify-end gap-1">
+                    <span className="font-serif text-3xl font-bold text-[var(--primary)]">
+                      {isFineTuning ? editableKcal : analyzedResult.kcal}
+                    </span>
+                    <span className="text-xs text-[var(--text-muted)] font-medium">kcal</span>
+                  </div>
+                  {/* Quick Calorie Adjusters */}
+                  <div className="flex items-center gap-1 mt-1 justify-end">
+                    <button
+                      type="button"
+                      onClick={() => adjustKcal(-25)}
+                      className="px-1.5 py-0.5 text-[10px] font-bold rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                      title="Reduce 25 kcal"
+                    >
+                      -25
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => adjustKcal(+25)}
+                      className="px-1.5 py-0.5 text-[10px] font-bold rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                      title="Add 25 kcal"
+                    >
+                      +25
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Macro Pills */}
-              <div className="grid grid-cols-4 gap-2 text-center">
-                <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-medium">Protein</span>
-                  <span className="font-bold text-xs text-[var(--primary)]">{analyzedResult.protein}</span>
+              {/* Macro Pills with Fine-Tuning Option */}
+              <div className="space-y-2">
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+                    <span className="text-[10px] text-[var(--text-muted)] block uppercase font-medium">Protein</span>
+                    <span className="font-bold text-xs text-[var(--primary)]">
+                      {isFineTuning ? editableProtein : analyzedResult.protein}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+                    <span className="text-[10px] text-[var(--text-muted)] block uppercase font-medium">Carbs</span>
+                    <span className="font-bold text-xs text-[var(--accent)]">
+                      {isFineTuning ? editableCarbs : analyzedResult.carbs}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+                    <span className="text-[10px] text-[var(--text-muted)] block uppercase font-medium">Fat</span>
+                    <span className="font-bold text-xs text-[var(--warning)]">
+                      {isFineTuning ? editableFat : analyzedResult.fat}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+                    <span className="text-[10px] text-[var(--text-muted)] block uppercase font-medium">Fiber</span>
+                    <span className="font-bold text-xs text-[var(--text)]">{analyzedResult.fiber}</span>
+                  </div>
                 </div>
-                <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-medium">Carbs</span>
-                  <span className="font-bold text-xs text-[var(--accent)]">{analyzedResult.carbs}</span>
+
+                {/* Fine Tune Toggle */}
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsFineTuning(!isFineTuning)}
+                    className="text-[11px] font-semibold text-[var(--primary)] hover:underline flex items-center gap-1"
+                  >
+                    <SlidersHorizontal className="w-3 h-3" />
+                    <span>{isFineTuning ? "Hide Portion Adjustments" : "Fine-Tune Macros / Portion"}</span>
+                  </button>
                 </div>
-                <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-medium">Fat</span>
-                  <span className="font-bold text-xs text-[var(--warning)]">{analyzedResult.fat}</span>
-                </div>
-                <div className="p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
-                  <span className="text-[10px] text-[var(--text-muted)] block uppercase font-medium">Fiber</span>
-                  <span className="font-bold text-xs text-[var(--text)]">{analyzedResult.fiber}</span>
-                </div>
+
+                {/* Fine-Tuning Inputs */}
+                {isFineTuning && (
+                  <div className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] grid grid-cols-2 sm:grid-cols-4 gap-2.5 animate-in fade-in">
+                    <div>
+                      <label className="text-[10px] font-semibold text-[var(--text-muted)] block mb-1">
+                        Calories (kcal)
+                      </label>
+                      <input
+                        type="number"
+                        value={editableKcal}
+                        onChange={(e) => setEditableKcal(Number(e.target.value) || 0)}
+                        className="w-full p-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] text-xs text-[var(--text)] font-semibold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-[var(--text-muted)] block mb-1">
+                        Protein
+                      </label>
+                      <input
+                        type="text"
+                        value={editableProtein}
+                        onChange={(e) => setEditableProtein(e.target.value)}
+                        className="w-full p-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] text-xs text-[var(--text)] font-semibold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-[var(--text-muted)] block mb-1">
+                        Carbs
+                      </label>
+                      <input
+                        type="text"
+                        value={editableCarbs}
+                        onChange={(e) => setEditableCarbs(e.target.value)}
+                        className="w-full p-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] text-xs text-[var(--text)] font-semibold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-[var(--text-muted)] block mb-1">
+                        Fat
+                      </label>
+                      <input
+                        type="text"
+                        value={editableFat}
+                        onChange={(e) => setEditableFat(e.target.value)}
+                        className="w-full p-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] text-xs text-[var(--text)] font-semibold"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Itemized Breakdown */}
+              {/* Itemized Portion Breakdown */}
               {analyzedResult.breakdown && analyzedResult.breakdown.length > 0 && (
                 <div className="space-y-1.5 pt-1">
                   <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider block">
-                    Portion Breakdown
+                    Calculated Portion Breakdown
                   </span>
                   <div className="space-y-1">
                     {analyzedResult.breakdown.map((item, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-[var(--surface)] border border-[var(--border)]"
+                        className="flex items-center justify-between text-xs py-1.5 px-3 rounded-xl bg-[var(--surface)] border border-[var(--border)]"
                       >
                         <span className="font-medium text-[var(--text)]">
                           {item.item}{" "}
@@ -283,7 +400,7 @@ export function ManualMealModal({
               className="px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
             >
               <Check className="w-4 h-4" />
-              <span>Apply & Update Daily Health Report</span>
+              <span>Apply & Update Health Report</span>
             </button>
           )}
         </div>

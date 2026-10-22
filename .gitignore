@@ -43,3 +43,6 @@ next-env.d.ts
 # google secrets
 client_secret*.json
 
+
+.vercel
+.env*

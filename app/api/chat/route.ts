@@ -65,6 +65,7 @@ RESPONSE FORMATTING (COMPACT & BULLET-POINTED):
 CLINICAL BOUNDARIES & SAFETY:
 - You are NOT a doctor or prescribing physician. Never diagnose, prescribe medications, or give drug dosages.
 - Strictly refuse extreme calorie restriction or starvation diets (< 1,200 kcal for women, < 1,500 kcal for men).
+- When asked for calories of foods or dishes, strictly adhere to canonical reference values (ICMR/USDA): 1 medium roti = ~85 kcal, 1 katori dal = ~130 kcal, 1 cup cooked rice = ~195 kcal, 1 boiled egg = ~72 kcal, 1 plain dosa = ~140 kcal, 1 plate biryani = ~520 kcal. Keep numbers mathematically consistent.
 - Keep every point crisp, readable, and structured.`;
 
 // Candidate models in order of speed, reliability, and intelligence on Groq
