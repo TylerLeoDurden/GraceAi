@@ -67,22 +67,28 @@ export default function GraceChatPage() {
     icon: string;
   } | null>(null);
 
-  // Load weather context on mount
+  // Load weather context on mount and auto-refresh every 30 minutes
   useEffect(() => {
-    fetch("/api/weather/recommend")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.location && data.weather) {
-          setWeatherInfo({
-            city: data.location.city,
-            region: data.location.region,
-            tempC: data.weather.temperatureC,
-            condition: data.weather.conditionLabel,
-            icon: data.weather.icon,
-          });
-        }
-      })
-      .catch(() => {});
+    const fetchLiveChatWeather = () => {
+      fetch("/api/weather/recommend", { cache: "no-store" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.location && data.weather) {
+            setWeatherInfo({
+              city: data.location.city,
+              region: data.location.region,
+              tempC: data.weather.temperatureC,
+              condition: data.weather.conditionLabel,
+              icon: data.weather.icon,
+            });
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchLiveChatWeather();
+    const interval = setInterval(fetchLiveChatWeather, 30 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   // Listen for prompt query param from external components (e.g. weather cards)

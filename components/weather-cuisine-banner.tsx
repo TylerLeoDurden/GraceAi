@@ -1,32 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   MapPin,
-  CloudSun,
   Sparkles,
-  Utensils,
-  ChevronRight,
-  Flame,
-  Search,
+  ChevronDown,
   Check,
   Compass,
   RefreshCw,
   Info,
   CalendarPlus,
   MessageSquare,
-  Thermometer,
-  Wind,
-  Droplets,
-  ChevronDown,
+  Clock,
   X,
+  Radio,
 } from "lucide-react";
 import {
   WeatherCulinaryPayload,
   WeatherDishRecommendation,
   POPULAR_CITIES,
-  DEFAULT_LOCATION,
 } from "@/lib/weather-service";
 
 interface WeatherCuisineBannerProps {
@@ -34,67 +27,184 @@ interface WeatherCuisineBannerProps {
   compact?: boolean;
 }
 
+const THIRTY_MINUTES_MS = 30 * 60 * 1000;
+const STORAGE_KEY_PLACE = "graceai_live_weather_place";
+
 export function WeatherCuisineBanner({
   onSelectDishForPlanner,
   compact = false,
 }: WeatherCuisineBannerProps) {
   const [data, setData] = useState<WeatherCulinaryPayload | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [searchCity, setSearchCity] = useState("");
-  const [isSearchingCity, setIsSearchingCity] = useState(false);
   const [activeDishIdx, setActiveDishIdx] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date());
+  const [minutesSinceRefresh, setMinutesSinceRefresh] = useState(0);
 
-  // Fetch weather and dish recommendations
-  const loadWeatherRecommendations = async (city?: string, lat?: number, lon?: number) => {
-    setIsLoading(true);
-    try {
-      let url = "/api/weather/recommend";
-      const params = new URLSearchParams();
-      if (lat && lon) {
-        params.set("lat", lat.toString());
-        params.set("lon", lon.toString());
-      } else if (city) {
-        params.set("city", city);
-      }
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
+  // Keep refs for active query parameters so the 30-min recurring timer can use them
+  const currentCityRef = useRef<string | undefined>(undefined);
+  const currentLatRef = useRef<number | undefined>(undefined);
+  const currentLonRef = useRef<number | undefined>(undefined);
+  const lastFetchTimeRef = useRef<number>(Date.now());
 
-      const res = await fetch(url);
-      if (res.ok) {
-        const payload: WeatherCulinaryPayload = await res.json();
-        setData(payload);
-      }
-    } catch (err) {
-      console.warn("Could not load weather culinary recommendations:", err);
-    } finally {
-      setIsLoading(false);
-    }
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
   };
 
+  // Fetch live weather and dish recommendations
+  const loadWeatherRecommendations = useCallback(
+    async (city?: string, lat?: number, lon?: number, isManual = false) => {
+      if (isManual) setIsRefreshing(true);
+      else if (!data) setIsLoading(true);
+
+      try {
+        let url = "/api/weather/recommend";
+        const params = new URLSearchParams();
+
+        if (lat !== undefined && lon !== undefined) {
+          params.set("lat", lat.toString());
+          params.set("lon", lon.toString());
+        } else if (city) {
+          params.set("city", city);
+        }
+
+        if (params.toString()) {
+          url += `?${params.toString()}`;
+        }
+
+        const res = await fetch(url, { cache: "no-store" });
+        if (res.ok) {
+          const payload: WeatherCulinaryPayload = await res.json();
+          setData(payload);
+          const now = new Date();
+          setLastRefreshedAt(now);
+          setMinutesSinceRefresh(0);
+          lastFetchTimeRef.current = now.getTime();
+
+          currentCityRef.current = payload.location.city;
+          currentLatRef.current = payload.location.latitude;
+          currentLonRef.current = payload.location.longitude;
+
+          // Persist user's place preference
+          if (typeof window !== "undefined") {
+            try {
+              localStorage.setItem(
+                STORAGE_KEY_PLACE,
+                JSON.stringify({
+                  city: payload.location.city,
+                  region: payload.location.region,
+                  country: payload.location.country,
+                  lat: payload.location.latitude,
+                  lon: payload.location.longitude,
+                })
+              );
+            } catch {
+              // Ignore storage quotas
+            }
+          }
+
+          if (isManual) {
+            triggerToast(
+              `Live weather updated for ${payload.location.city}: ${payload.weather.temperatureC}°C (${payload.weather.conditionLabel})`
+            );
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load live weather culinary recommendations:", err);
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  // Initial load: Check saved place or browser GPS
   useEffect(() => {
-    // Initial load: Try browser geolocation first for hyper-local accuracy
-    if (typeof window !== "undefined" && "geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          loadWeatherRecommendations(undefined, pos.coords.latitude, pos.coords.longitude);
-        },
-        () => {
-          // Fall back to server auto-detected location (IP or default)
-          loadWeatherRecommendations();
-        },
-        { timeout: 4000 }
-      );
-    } else {
-      loadWeatherRecommendations();
+    if (typeof window !== "undefined") {
+      let savedPlace: { city?: string; lat?: number; lon?: number } | null = null;
+      try {
+        const item = localStorage.getItem(STORAGE_KEY_PLACE);
+        if (item) savedPlace = JSON.parse(item);
+      } catch {
+        // Fall through
+      }
+
+      if (savedPlace?.city) {
+        currentCityRef.current = savedPlace.city;
+        currentLatRef.current = savedPlace.lat;
+        currentLonRef.current = savedPlace.lon;
+        loadWeatherRecommendations(savedPlace.city, savedPlace.lat, savedPlace.lon);
+      } else if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            currentLatRef.current = pos.coords.latitude;
+            currentLonRef.current = pos.coords.longitude;
+            loadWeatherRecommendations(undefined, pos.coords.latitude, pos.coords.longitude);
+          },
+          () => {
+            loadWeatherRecommendations();
+          },
+          { timeout: 5000 }
+        );
+      } else {
+        loadWeatherRecommendations();
+      }
     }
-  }, []);
+  }, [loadWeatherRecommendations]);
+
+  // Set up 30-minute recurring auto-refresh interval
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      loadWeatherRecommendations(
+        currentCityRef.current,
+        currentLatRef.current,
+        currentLonRef.current,
+        false
+      );
+    }, THIRTY_MINUTES_MS);
+
+    // Minor 60-second ticker to update the "Updated X min ago" badge
+    const tickerId = setInterval(() => {
+      const elapsedMinutes = Math.floor((Date.now() - lastFetchTimeRef.current) / 60000);
+      setMinutesSinceRefresh(elapsedMinutes);
+    }, 60000);
+
+    // Auto-refresh when tab becomes active after being away for >= 30 minutes
+    const handleVisibilityChange = () => {
+      if (
+        document.visibilityState === "visible" &&
+        Date.now() - lastFetchTimeRef.current >= THIRTY_MINUTES_MS
+      ) {
+        loadWeatherRecommendations(
+          currentCityRef.current,
+          currentLatRef.current,
+          currentLonRef.current,
+          false
+        );
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(intervalId);
+      clearInterval(tickerId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [loadWeatherRecommendations]);
 
   const handleSelectCity = (city: string) => {
     setShowCityPicker(false);
-    loadWeatherRecommendations(city);
+    currentCityRef.current = city;
+    currentLatRef.current = undefined;
+    currentLonRef.current = undefined;
+    loadWeatherRecommendations(city, undefined, undefined, true);
   };
 
   const handleCustomCitySearch = (e: React.FormEvent) => {
@@ -104,14 +214,9 @@ export function WeatherCuisineBanner({
     setSearchCity("");
   };
 
-  const triggerToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
-  };
-
   if (isLoading && !data) {
     return (
-      <div className="p-6 rounded-3xl border border-[var(--border)] bg-[var(--surface-elevated)] animate-pulse flex items-center justify-between">
+      <div className="p-6 rounded-3xl border border-[var(--border)] bg-[var(--surface-elevated)] animate-pulse flex items-center justify-between mb-6">
         <div className="space-y-2">
           <div className="h-4 w-48 bg-[var(--border)] rounded-lg"></div>
           <div className="h-6 w-72 bg-[var(--border)] rounded-xl"></div>
@@ -141,6 +246,8 @@ export function WeatherCuisineBanner({
         return "from-[var(--primary)]/10 via-[var(--surface-elevated)] to-[var(--surface)] border-[var(--border)]";
     }
   };
+
+  const minutesUntilNextUpdate = Math.max(0, 30 - minutesSinceRefresh);
 
   return (
     <div
@@ -182,7 +289,7 @@ export function WeatherCuisineBanner({
               </span>
             </div>
 
-            <div className="flex items-center gap-2 mt-0.5">
+            <div className="flex flex-wrap items-center gap-2 mt-0.5">
               <span className="font-serif text-lg sm:text-xl font-bold text-[var(--text)]">
                 {weather.temperatureC}°C
               </span>
@@ -192,11 +299,22 @@ export function WeatherCuisineBanner({
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--primary-light)] text-[var(--primary)] font-bold tracking-wider uppercase">
                 {timeContext.activeSlot} Window
               </span>
+
+              {/* 30-min live update indicator */}
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                <span>
+                  Live • {minutesSinceRefresh === 0 ? "Just updated" : `${minutesSinceRefresh}m ago`} (next in {minutesUntilNextUpdate}m)
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Change City Button */}
+        {/* Change City and Refresh Button */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -209,11 +327,20 @@ export function WeatherCuisineBanner({
 
           <button
             type="button"
-            onClick={() => loadWeatherRecommendations(location.city)}
-            className="p-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
-            title="Refresh live weather & dishes"
+            onClick={() =>
+              loadWeatherRecommendations(
+                currentCityRef.current,
+                currentLatRef.current,
+                currentLonRef.current,
+                true
+              )
+            }
+            disabled={isRefreshing}
+            className="px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)] hover:border-[var(--primary)] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50"
+            title="Refresh live weather now (auto-updates every 30 min)"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[var(--primary)]" : ""}`} />
+            <span className="hidden sm:inline">Refresh Live</span>
           </button>
         </div>
       </div>
@@ -224,7 +351,7 @@ export function WeatherCuisineBanner({
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[var(--primary)]" />
             <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--text)]">
-              Curated for {location.city}&apos;s Weather & {timeContext.activeSlot}
+              Curated for {location.city}&apos;s Live Climate & {timeContext.activeSlot}
             </h3>
           </div>
           <div className="flex gap-1">
@@ -333,7 +460,7 @@ export function WeatherCuisineBanner({
 
                 <Link
                   href={`/grace?mode=chef&prompt=${encodeURIComponent(
-                    `I am in ${location.city} where the weather is ${weather.temperatureC}°C and ${weather.conditionLabel}. Please give me the authentic, step-by-step recipe and cooking tips for: ${currentDish.recipeTitle}`
+                    `I am in ${location.city} where the live weather is ${weather.temperatureC}°C and ${weather.conditionLabel}. Please give me the authentic, step-by-step recipe and cooking tips for: ${currentDish.recipeTitle}`
                   )}`}
                   className="px-3.5 py-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:border-[var(--primary)] text-[var(--text)] text-xs font-semibold flex items-center gap-1.5 transition-colors"
                 >
@@ -375,7 +502,7 @@ export function WeatherCuisineBanner({
               <div className="flex items-center gap-2">
                 <Compass className="w-5 h-5 text-[var(--primary)]" />
                 <h4 className="font-serif text-lg font-bold text-[var(--text)]">
-                  Predict Weather & Place
+                  Live Weather & Location
                 </h4>
               </div>
               <button
@@ -389,7 +516,7 @@ export function WeatherCuisineBanner({
             {/* Custom Search Input */}
             <form onSubmit={handleCustomCitySearch} className="space-y-2">
               <label className="text-xs font-semibold text-[var(--text-muted)]">
-                Search any city worldwide:
+                Search any city worldwide (auto-updates every 30m):
               </label>
               <div className="flex gap-2">
                 <input
@@ -415,7 +542,15 @@ export function WeatherCuisineBanner({
                 if ("geolocation" in navigator) {
                   navigator.geolocation.getCurrentPosition((pos) => {
                     setShowCityPicker(false);
-                    loadWeatherRecommendations(undefined, pos.coords.latitude, pos.coords.longitude);
+                    currentCityRef.current = undefined;
+                    currentLatRef.current = pos.coords.latitude;
+                    currentLonRef.current = pos.coords.longitude;
+                    loadWeatherRecommendations(
+                      undefined,
+                      pos.coords.latitude,
+                      pos.coords.longitude,
+                      true
+                    );
                   });
                 }
               }}

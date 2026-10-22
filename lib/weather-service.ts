@@ -152,7 +152,7 @@ export function parseWeatherCode(code: number, tempC: number, isDay: boolean): {
 export async function fetchLiveWeather(lat: number, lon: number): Promise<WeatherData> {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m`;
   
-  const res = await fetch(url, { next: { revalidate: 600 } }); // Cache for 10 minutes
+  const res = await fetch(url, { cache: "no-store" }); // Always fetch live current weather
   if (!res.ok) {
     throw new Error(`Open-Meteo error: ${res.statusText}`);
   }

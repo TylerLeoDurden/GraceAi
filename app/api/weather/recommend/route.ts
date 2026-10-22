@@ -124,6 +124,8 @@ export async function GET(req: NextRequest) {
         formattedDate,
       },
       recommendations,
+      updatedAt: now.toISOString(),
+      refreshIntervalMinutes: 30,
     });
   } catch (error: unknown) {
     console.error("Weather Recommendation API Error:", error);
