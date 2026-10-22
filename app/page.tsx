@@ -22,6 +22,7 @@ import {
 import { calculateNutritionPlan, UserStats, ActivityLevel, HealthGoal } from "@/lib/nutrition";
 import { FormattedMessage } from "@/components/formatted-message";
 import { useRealTime } from "@/lib/use-real-time";
+import { DynamicActiveRhythm } from "@/components/dynamic-active-rhythm";
 
 const CUISINE_CATEGORIES = [
   { id: "all", label: "All Traditions" },
@@ -312,101 +313,9 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right Visual — Tactile Editorial Spread */}
+          {/* Right Visual — Dynamic Active Nourishment Rhythm (Day-by-Day & Meal-by-Meal) */}
           <div className="lg:col-span-5">
-            <div className="editorial-card rounded-3xl p-6 sm:p-7 space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
-                <div>
-                  <span className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">
-                    {mounted && status ? `${status.dayOfWeek}’s Active Rhythm` : "Today’s Nourishment"}
-                  </span>
-                  <h3 className="font-serif text-lg font-semibold text-[var(--text)]">
-                    {mounted && status?.activeMealSlot === "Breakfast"
-                      ? "South Indian Moong Dal Idli & Chutney"
-                      : mounted && status?.activeMealSlot === "Lunch"
-                      ? "Kerala Moong & Brown Rice Bowl"
-                      : mounted && status?.activeMealSlot === "Snack"
-                      ? "Roasted Makhana & Mint Chai"
-                      : "Mediterranean Roasted Vegetable Bowl"}
-                  </h3>
-                </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--primary-light)] text-[var(--primary)] font-semibold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
-                  <span>{mounted && status ? status.activeMealSlot : "Lunch"}</span>
-                </span>
-              </div>
-
-              {/* Recipe image preview */}
-              <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-[var(--surface-elevated)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=700&q=80"
-                  alt="Kerala Moong Khichdi"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-[var(--surface)]/90 backdrop-blur-md text-xs font-medium text-[var(--text)] flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-[var(--primary)]" />
-                  <span>20 min prep</span>
-                  <span>•</span>
-                  <span>380 kcal</span>
-                </div>
-              </div>
-
-              {/* Macro breakdown */}
-              <div className="grid grid-cols-3 gap-2.5 text-center text-xs">
-                <div className="p-3 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)]">
-                  <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Protein</div>
-                  <div className="font-serif font-bold text-base text-[var(--primary)] mt-0.5">18g</div>
-                  <div className="text-[10px] text-[var(--text-muted)]">Clean lentils</div>
-                </div>
-                <div className="p-3 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)]">
-                  <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Carbs</div>
-                  <div className="font-serif font-bold text-base text-[var(--accent)] mt-0.5">58g</div>
-                  <div className="text-[10px] text-[var(--text-muted)]">Unpolished rice</div>
-                </div>
-                <div className="p-3 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)]">
-                  <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Fibre</div>
-                  <div className="font-serif font-bold text-base text-[var(--warning)] mt-0.5">9g</div>
-                  <div className="text-[10px] text-[var(--text-muted)]">High gut satiety</div>
-                </div>
-              </div>
-
-              {/* Daily Nourishment Rhythm Card */}
-              <div className="p-4 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[var(--primary)] text-white flex items-center justify-center">
-                      <Clock className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-[var(--text)]">Daily Nourishment Rhythm</div>
-                      <div className="text-[11px] text-[var(--text-muted)]">Lunch window: 12:30 PM – 2:30 PM</div>
-                    </div>
-                  </div>
-                  <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[var(--success)]/15 text-[var(--success)] font-medium">
-                    Logged with care
-                  </span>
-                </div>
-
-                {/* Flexible logging window & mindful actions */}
-                <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[var(--border)]">
-                  <span className="text-[var(--text-muted)]">
-                    Flexible log window: 5h remaining
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-[var(--primary)] text-white text-[10px] font-medium">
-                      I Ate This
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-lg bg-[var(--surface)] text-[var(--text-muted)] text-[10px] border border-[var(--border)]">
-                      Ate Something Else
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-lg bg-[var(--surface)] text-[var(--text-muted)] text-[10px] border border-[var(--border)]">
-                      Skipped
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <DynamicActiveRhythm />
           </div>
         </div>
       </section>
