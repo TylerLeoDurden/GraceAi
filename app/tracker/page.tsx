@@ -29,6 +29,7 @@ import {
   Info,
   FileText,
   ShieldCheck,
+  UtensilsCrossed,
 } from "lucide-react";
 import {
   getWeekDays,
@@ -675,7 +676,15 @@ export default function TrackerPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/planner"
+              className="px-3 py-1.5 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)] text-xs font-semibold text-[var(--text)] flex items-center gap-1.5 transition-colors shadow-2xs"
+            >
+              <UtensilsCrossed className="w-3.5 h-3.5 text-[var(--primary)]" />
+              <span>Create Dietary Plan</span>
+            </Link>
+
             <Link
               href="/planner"
               className="text-xs font-semibold text-[var(--primary)] hover:underline flex items-center gap-1"
