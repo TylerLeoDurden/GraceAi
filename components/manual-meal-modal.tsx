@@ -175,8 +175,8 @@ export function ManualMealModal({
               className="w-full p-3.5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] text-xs sm:text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary)] transition-all resize-none"
             />
             {errorMsg && (
-              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5 animate-in fade-in">
-                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-2xl bg-[var(--warning)]/10 border border-[var(--warning)]/30 text-xs text-[var(--warning)] flex items-start gap-2.5 animate-in fade-in">
+                <AlertCircle className="w-4 h-4 text-[var(--warning)] shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <p className="font-semibold text-xs leading-relaxed">{errorMsg}</p>
                   <p className="text-[11px] text-[var(--text-muted)]">

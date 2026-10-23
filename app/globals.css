@@ -1,76 +1,88 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
-    /* ─── Light Theme — "Morning Garden" ──────────────────────────────────────
-       Inspired by the logo's light version: cream parchment grounds,
-       deep forest greens for authority, sage greens for warmth,
-       and a terracotta-rose accent for energy & CTA moments.
-    ──────────────────────────────────────────────────────────────────────── */
+  /* ─── Light Theme — "Ocean Mist" ───────────────────────────────────────────
+     Cool misty blue-grey grounds, deep ocean teal for authority and focus,
+     vibrant ocean teal accents, warm gold for milestones, and crisp slate text.
+  ────────────────────────────────────────────────────────────────────────── */
+  :root,
+  [data-theme="light"] {
+    color-scheme: light;
+    --background: #F0F5F7;
+    --surface: #FFFFFF;
+    --surface-secondary: #E4EEF2;
+    --surface-elevated: #FFFFFF;
 
-    /* Brand Green — logo leaf deep forest */
-    --primary:           #2C5F47;   /* Forest Canopy */
-    --primary-hover:     #1F4A35;   /* Old Growth Shade */
-    --primary-light:     #EEF6F1;   /* New Leaf Mist */
-    --primary-border:    #B2D4C0;   /* Pale Sage Rim */
+    --primary: #075E66;
+    --primary-hover: #064B52;
+    --accent: #087E8B;
+    --accent-subtle: #D8EFF0;
 
-    /* Backgrounds — warm, breathable, paper-like */
-    --background:        #F8F6F1;   /* Handmade Paper */
-    --surface:           #FFFFFF;   /* Clean Porcelain */
-    --surface-elevated:  #EFF0EC;   /* Frosted Herb Marble */
+    --gold: #F5E5B9;
+    --gold-text: #624716;
 
-    /* Borders — soft, natural, unobtrusive */
-    --border:            #DDE3DA;   /* Dried Grass Thread */
+    --text-primary: #17353D;
+    --text-secondary: #58717A;
+    --text-muted: #718791;
 
-    /* Accent — warm terracotta for CTA / energy */
-    --accent:            #C25E3A;   /* Sunbaked Clay Pot */
-    --accent-hover:      #A84D2D;   /* Smoked Ember */
-    --accent-light:      #FBF0EB;   /* Blushed Cream */
+    --border: #D8E5E9;
+    --focus-ring: #087E8B;
 
-    /* Text — warm near-black, readable and human */
-    --text:              #1E2621;   /* Midnight Grove */
-    --text-muted:        #6A7A6E;   /* Faded Fern */
+    --success: #267653;
+    --warning: #96651C;
+    --error: #B94141;
+    --info: #356E9B;
 
-    /* Semantic */
-    --success:           #2E7A50;   /* Garden Basil */
-    --warning:           #C97B1A;   /* Golden Turmeric */
-    --danger:            #C03535;   /* Dried Pomegranate */
+    /* Backward compatibility mappings */
+    --text: var(--text-primary);
+    --primary-light: var(--accent-subtle);
+    --primary-border: #B4CCD2;
+    --primary-foreground: #FFFFFF;
+    --accent-light: var(--accent-subtle);
+    --accent-hover: #06636D;
+    --danger: var(--error);
   }
 
+  /* ─── Dark Theme — "Deep Ocean" ─────────────────────────────────────────────
+     Deep blue-teal backgrounds (avoiding pure black), luminous aqua-teal
+     for interactive clarity, deep slate surfaces, and warm gold accents.
+  ────────────────────────────────────────────────────────────────────────── */
+  [data-theme="dark"],
   .dark {
-    /* ─── Dark Theme — "Forest Night" ────────────────────────────────────────
-       Inspired by the logo dark version: deep peat backgrounds,
-       luminous mint-sage greens that glow, amber warmth for energy.
-       Feels like candlelight inside an old greenhouse.
-    ──────────────────────────────────────────────────────────────────────── */
+    color-scheme: dark;
+    --background: #101F2A;
+    --surface: #192D3A;
+    --surface-secondary: #203745;
+    --surface-elevated: #263F4D;
 
-    /* Brand Green — luminous sage, glows against dark */
-    --primary:           #7DC99E;   /* Luminous Moonlit Sage */
-    --primary-hover:     #93D5B1;   /* Dew on Fern */
-    --primary-light:     #152219;   /* Deep Forest Shadow */
-    --primary-border:    #273D2E;   /* Pine Bark Rim */
+    --primary: #2DD4C5;
+    --primary-hover: #62E3D6;
+    --accent: #2DD4C5;
+    --accent-subtle: #1D4449;
 
-    /* Backgrounds — rich, warm, dark forest */
-    --background:        #111714;   /* Midnight Peat */
-    --surface:           #192018;   /* Forest Floor */
-    --surface-elevated:  #1F2B21;   /* Moss Shelf */
+    --gold: #F3D58A;
+    --gold-text: #F3D58A;
 
-    /* Borders — barely visible, organic */
-    --border:            #283626;   /* Weathered Bark */
+    --text-primary: #E6F1F4;
+    --text-secondary: #A1B8C5;
+    --text-muted: #829BA9;
 
-    /* Accent — warm amber-terracotta, fire in the forest */
-    --accent:            #E08050;   /* Ember Glow */
-    --accent-hover:      #EF9060;   /* Warm Firelight */
-    --accent-light:      #261810;   /* Smoldering Ash */
+    --border: #304958;
+    --focus-ring: #62E3D6;
 
-    /* Text — luminous, warm linen */
-    --text:              #EEF0E8;   /* Moonlit Linen */
-    --text-muted:        #8FA895;   /* Soft Lichen */
+    --success: #70D6A1;
+    --warning: #F3D58A;
+    --error: #FF9292;
+    --info: #8EC9F0;
 
-    /* Semantic */
-    --success:           #55C080;   /* Bioluminescent Fern */
-    --warning:           #EFB045;   /* Saffron Lantern */
-    --danger:            #E05555;   /* Red Currant */
+    /* Backward compatibility mappings */
+    --text: var(--text-primary);
+    --primary-light: var(--accent-subtle);
+    --primary-border: #2B4E5E;
+    --primary-foreground: #101F2A;
+    --accent-light: var(--accent-subtle);
+    --accent-hover: #62E3D6;
+    --danger: var(--error);
   }
 
   * {
@@ -79,9 +91,9 @@
 
   body {
     background-color: var(--background);
-    color: var(--text);
+    color: var(--text-primary);
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.25s ease, color 0.25s ease;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -91,103 +103,153 @@
     font-feature-settings: "liga" 1, "kern" 1;
   }
 
-  /* Smooth focus ring using brand green */
+  /* Accessible focus ring using theme focus-ring */
   :focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
     border-radius: 6px;
   }
 
-  /* Selection highlight — brand mint */
+  /* Selection highlight */
   ::selection {
-    background-color: var(--primary-light);
+    background-color: var(--accent-subtle);
     color: var(--primary);
   }
 }
 
 @theme {
-  --color-primary:           var(--primary);
-  --color-primary-hover:     var(--primary-hover);
-  --color-primary-light:     var(--primary-light);
-  --color-primary-border:    var(--primary-border);
-  --color-background:        var(--background);
-  --color-surface:           var(--surface);
-  --color-surface-elevated:  var(--surface-elevated);
-  --color-border:            var(--border);
-  --color-accent:            var(--accent);
-  --color-accent-hover:      var(--accent-hover);
-  --color-accent-light:      var(--accent-light);
-  --color-text:              var(--text);
-  --color-text-muted:        var(--text-muted);
-  --color-success:           var(--success);
-  --color-warning:           var(--warning);
-  --color-danger:            var(--danger);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-primary-border: var(--primary-border);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-light: var(--accent-light);
+  --color-gold: var(--gold);
+  --color-gold-text: var(--gold-text);
+  --color-text: var(--text);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-focus-ring: var(--focus-ring);
 
   --font-serif: var(--font-fraunces), Georgia, serif;
-  --font-sans:  var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CARD SYSTEM — Editorial cards with organic depth & hover lift
+   CARD SYSTEM — Clean solid surfaces, subtle borders, restrained shadows
 ───────────────────────────────────────────────────────────────────────────── */
 
 .editorial-card {
   background-color: var(--surface);
   border: 1px solid var(--border);
   box-shadow:
-    0 1px 2px rgba(30, 38, 33, 0.04),
-    0 4px 16px -4px rgba(30, 38, 33, 0.06);
+    0 1px 2px rgba(16, 31, 42, 0.04),
+    0 4px 12px -2px rgba(16, 31, 42, 0.05);
   transition:
     border-color 0.2s ease,
-    box-shadow 0.25s ease,
+    box-shadow 0.2s ease,
     transform 0.2s ease;
 }
 
 .editorial-card:hover {
   border-color: var(--primary-border);
   box-shadow:
-    0 2px 4px rgba(30, 38, 33, 0.05),
-    0 8px 28px -6px rgba(44, 95, 71, 0.13);
+    0 2px 4px rgba(16, 31, 42, 0.05),
+    0 8px 20px -4px rgba(7, 94, 102, 0.1);
 }
 
-.dark .editorial-card {
+.dark .editorial-card,
+[data-theme="dark"] .editorial-card {
   background-color: var(--surface);
   border: 1px solid var(--border);
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.3),
-    0 4px 24px -6px rgba(0, 0, 0, 0.5);
+    0 1px 3px rgba(0, 0, 0, 0.25),
+    0 4px 16px -4px rgba(0, 0, 0, 0.4);
 }
 
-.dark .editorial-card:hover {
+.dark .editorial-card:hover,
+[data-theme="dark"] .editorial-card:hover {
   border-color: var(--primary-border);
   box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.35),
-    0 10px 32px -8px rgba(0, 0, 0, 0.55),
-    0 0 0 1px var(--primary-border);
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    0 8px 24px -6px rgba(45, 212, 197, 0.12);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   GLASS NAVIGATION — Refined backdrop blur panels
+   GLASS NAVIGATION — Restrained misty blur panels
 ───────────────────────────────────────────────────────────────────────────── */
 
 .glass-panel {
-  background: rgba(248, 246, 241, 0.86);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-bottom: 1px solid rgba(221, 227, 218, 0.7);
-  box-shadow: 0 1px 20px rgba(30, 38, 33, 0.05);
+  background: rgba(240, 245, 247, 0.90);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(16, 31, 42, 0.03);
 }
 
-.dark .glass-panel {
-  background: rgba(17, 23, 20, 0.88);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border-bottom: 1px solid rgba(40, 54, 38, 0.8);
-  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.4);
+.dark .glass-panel,
+[data-theme="dark"] .glass-panel {
+  background: rgba(16, 31, 42, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CUSTOM SCROLLBAR — Brand sage, organic feel
+   ACCESSIBILITY: PRIMARY BUTTONS CONTRAST
+   In light mode, --primary is #075E66 (dark teal) -> text-white has AAA 7.5:1
+   In dark mode, --primary is #2DD4C5 (bright aqua-teal) -> text needs to be dark
+   #101F2A (deep ocean) for AAA 9.2:1 contrast!
+───────────────────────────────────────────────────────────────────────────── */
+
+.dark .bg-\[var\(--primary\)\].text-white,
+[data-theme="dark"] .bg-\[var\(--primary\)\].text-white,
+.dark .bg-primary.text-white,
+[data-theme="dark"] .bg-primary.text-white,
+.dark .bg-\[var\(--accent\)\].text-white,
+[data-theme="dark"] .bg-\[var\(--accent\)\].text-white,
+.dark .bg-accent.text-white,
+[data-theme="dark"] .bg-accent.text-white {
+  color: #101F2A !important;
+  font-weight: 600;
+}
+
+.dark .bg-\[var\(--primary\)\].text-white svg,
+[data-theme="dark"] .bg-\[var\(--primary\)\].text-white svg,
+.dark .bg-primary.text-white svg,
+[data-theme="dark"] .bg-primary.text-white svg,
+.dark .bg-\[var\(--accent\)\].text-white svg,
+[data-theme="dark"] .bg-\[var\(--accent\)\].text-white svg,
+.dark .bg-accent.text-white svg,
+[data-theme="dark"] .bg-accent.text-white svg {
+  color: #101F2A !important;
+  stroke: #101F2A !important;
+}
+
+.dark .hover\:bg-\[var\(--primary\)\]:hover.text-white,
+[data-theme="dark"] .hover\:bg-\[var\(--primary\)\]:hover.text-white,
+.dark .hover\:bg-\[var\(--accent\)\]:hover.text-white,
+[data-theme="dark"] .hover\:bg-\[var\(--accent\)\]:hover.text-white {
+  color: #101F2A !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CUSTOM SCROLLBAR — Ocean Mist cool palette
 ───────────────────────────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar {
@@ -200,12 +262,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-border);
+  background: var(--border);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+  background: var(--text-muted);
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -218,7 +280,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   RANGE INPUT — Brand green slider track
+   FORM CONTROLS & RANGE INPUT
 ───────────────────────────────────────────────────────────────────────────── */
 
 input[type="range"] {

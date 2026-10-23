@@ -42,7 +42,7 @@ export function BottomNav() {
                 <div
                   className={`w-9 h-9 rounded-2xl flex items-center justify-center transition-transform ${
                     isActive
-                      ? "bg-[var(--accent)] text-white scale-110 shadow-md shadow-[var(--accent)]/30"
+                      ? "bg-[var(--accent)] text-white scale-105 shadow-sm"
                       : "bg-[var(--primary)]/15 text-[var(--primary)]"
                   }`}
                 >

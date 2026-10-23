@@ -1499,9 +1499,9 @@ export function ManualDietPlanModal({
                 <div
                   className={`h-full transition-all duration-300 rounded-full ${
                     isTooLowCalorie
-                      ? "bg-amber-500"
+                      ? "bg-[var(--warning)]"
                       : caloriePct > 115
-                      ? "bg-amber-600"
+                      ? "bg-[var(--warning)]"
                       : "bg-[var(--primary)]"
                   }`}
                   style={{ width: `${Math.min(100, caloriePct)}%` }}
@@ -1516,11 +1516,11 @@ export function ManualDietPlanModal({
 
             {/* Clinical Safety Warning if under 1200 kcal */}
             {isTooLowCalorie && (
-              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5 animate-in fade-in">
-                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-2xl bg-[var(--warning)]/10 border border-[var(--warning)]/30 text-[var(--warning)] text-xs flex items-start gap-2.5 animate-in fade-in">
+                <AlertCircle className="w-4 h-4 text-[var(--warning)] shrink-0 mt-0.5" />
                 <div className="space-y-0.5">
                   <span className="font-bold">graceAI Clinical Safety Guardrail</span>
-                  <p className="text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
+                  <p className="text-[11px] leading-relaxed text-[var(--warning)]">
                     Your manual plan total ({totalKcal} kcal) is below 1,200 kcal. Severe calorie restriction can cause metabolic slowdown, fatigue, and muscle loss. We advise adding nutrient-dense whole grains, nuts, or legumes to your snack or lunch.
                   </p>
                 </div>

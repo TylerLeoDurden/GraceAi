@@ -240,7 +240,7 @@ export function FloatingGrace() {
                 <div
                   className={`max-w-[88%] rounded-2xl px-4 py-3 leading-relaxed shadow-sm ${
                     m.role === "user"
-                      ? "bg-[var(--text)] text-[var(--background)]"
+                      ? "bg-[var(--primary)] text-white"
                       : m.alert
                       ? "bg-[var(--danger)]/10 text-[var(--text)] border border-[var(--danger)]/25"
                       : "bg-[var(--surface)] text-[var(--text)] border border-[var(--border)]"
@@ -346,7 +346,7 @@ export function FloatingGrace() {
             <button
               onClick={() => handleSend()}
               disabled={isTyping || !input.trim()}
-              className="p-2.5 rounded-xl bg-[var(--text)] text-[var(--background)] hover:opacity-90 transition-opacity disabled:opacity-40"
+              className="p-2.5 rounded-xl bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] transition-opacity disabled:opacity-40"
             >
               <Send className="w-3.5 h-3.5" />
             </button>

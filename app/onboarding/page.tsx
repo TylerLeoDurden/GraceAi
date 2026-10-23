@@ -447,7 +447,7 @@ export default function OnboardingPage() {
             <div className="pt-2 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/planner"
-                className="flex-1 py-4 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-medium text-center shadow-md active:scale-95 transition-all"
+                className="flex-1 py-4 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-medium text-center shadow-md active:scale-95 transition-all"
               >
                 Go to Weekly Meal Planner
               </Link>

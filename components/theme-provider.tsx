@@ -13,24 +13,32 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("graceai-theme") as Theme | null;
+        if (stored === "dark" || stored === "light") return stored;
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+      } catch {
+        // ignore
+      }
+    }
+    return "light";
+  });
 
   useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem("graceai-theme") as Theme | null;
-    if (stored) {
-      setThemeState(stored);
-      document.documentElement.classList.toggle("dark", stored === "dark");
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setThemeState("dark");
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem("graceai-theme", newTheme);
+    try {
+      localStorage.setItem("graceai-theme", newTheme);
+    } catch {
+      // ignore
+    }
+    document.documentElement.setAttribute("data-theme", newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
@@ -40,7 +48,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      <div className={mounted ? "" : "invisible"}>{children}</div>
+      {children}
     </ThemeContext.Provider>
   );
 }

@@ -286,30 +286,19 @@ export function WeatherCuisineBanner({
 
   // Visual ambiance style based on weather condition
   const getAmbianceStyle = () => {
-    switch (weather.condition) {
-      case "rainy":
-        return "from-emerald-950/20 via-sky-950/20 to-slate-900/20 border-sky-900/30";
-      case "hot":
-        return "from-amber-950/20 via-orange-950/15 to-stone-900/20 border-amber-900/30";
-      case "chilly":
-        return "from-indigo-950/25 via-blue-950/20 to-slate-900/20 border-indigo-900/30";
-      case "cloudy":
-        return "from-teal-950/20 via-slate-900/20 to-zinc-900/20 border-teal-900/30";
-      default:
-        return "from-[var(--primary)]/10 via-[var(--surface-elevated)] to-[var(--surface)] border-[var(--border)]";
-    }
+    return "bg-[var(--surface)] border-[var(--border)]";
   };
 
   const minutesUntilNextUpdate = Math.max(0, 30 - minutesSinceRefresh);
 
   return (
     <div
-      className={`relative rounded-3xl border bg-gradient-to-br ${getAmbianceStyle()} shadow-sm overflow-hidden transition-all duration-300 p-5 sm:p-6 mb-6`}
+      className={`relative rounded-3xl border ${getAmbianceStyle()} shadow-sm overflow-hidden transition-all duration-300 p-5 sm:p-6 mb-6`}
     >
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="absolute top-4 right-4 z-30 bg-emerald-900/95 border border-emerald-500/30 text-emerald-100 text-xs py-2 px-3.5 rounded-2xl shadow-xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
-          <Check className="w-4 h-4 text-emerald-400" />
+        <div className="absolute top-4 right-4 z-30 bg-[var(--surface)] border border-[var(--primary)] text-[var(--text-primary)] text-xs py-2 px-3.5 rounded-2xl shadow-xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+          <Check className="w-4 h-4 text-[var(--success)]" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -365,10 +354,10 @@ export function WeatherCuisineBanner({
               </span>
 
               {/* 30-min live update indicator */}
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--accent-subtle)] border border-[var(--primary-border)] text-[var(--primary)] text-[10px] font-semibold">
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--primary)] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[var(--primary)]"></span>
                 </span>
                 <span>
                   Live • {minutesSinceRefresh === 0 ? "Just updated" : `${minutesSinceRefresh}m ago`} (next in {minutesUntilNextUpdate}m)

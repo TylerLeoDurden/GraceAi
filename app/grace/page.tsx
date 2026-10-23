@@ -335,7 +335,7 @@ export default function GraceChatPage() {
             <div
               className={`max-w-[85%] rounded-3xl p-4 space-y-2 leading-relaxed ${
                 m.role === "user"
-                  ? "bg-[var(--accent)] text-white shadow-sm"
+                  ? "bg-[var(--primary)] text-white shadow-sm"
                   : m.alert
                   ? "bg-[var(--danger)]/15 border border-[var(--danger)]/40 text-[var(--text)]"
                   : "bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--text)] shadow-sm"
@@ -516,7 +516,7 @@ export default function GraceChatPage() {
         <button
           onClick={() => handleSend()}
           disabled={isTyping || !input.trim()}
-          className="px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+          className="px-5 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
         >
           <span>Send</span>
           <Send className="w-3.5 h-3.5" />

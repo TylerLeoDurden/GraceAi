@@ -209,7 +209,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/onboarding"
-                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium transition-all shadow-sm active:scale-95"
+                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-sm font-medium transition-all shadow-sm active:scale-95"
                 >
                   <span>Build My Menu</span>
                   <ArrowRight className="w-4 h-4" />

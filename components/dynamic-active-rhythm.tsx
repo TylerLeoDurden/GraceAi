@@ -726,7 +726,7 @@ export function DynamicActiveRhythm() {
               {slot === "Dinner" && <Moon className="w-3.5 h-3.5 text-indigo-400" />}
               <span>{slot}</span>
               {isNow && (
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
               )}
             </button>
           );
@@ -839,11 +839,11 @@ export function DynamicActiveRhythm() {
           <span
             className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold border flex items-center gap-1 ${
               logState === "eaten"
-                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                ? "bg-[var(--success)]/15 text-[var(--success)] border-[var(--success)]/30"
                 : logState === "other"
-                ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                ? "bg-[var(--warning)]/15 text-[var(--warning)] border-[var(--warning)]/30"
                 : logState === "skipped"
-                ? "bg-zinc-500/15 text-zinc-500 border-zinc-500/30"
+                ? "bg-[var(--text-muted)]/15 text-[var(--text-muted)] border-[var(--text-muted)]/30"
                 : "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20"
             }`}
           >
@@ -870,7 +870,7 @@ export function DynamicActiveRhythm() {
               onClick={() => handleLogAction("eaten")}
               className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
                 logState === "eaten"
-                  ? "bg-emerald-600 text-white shadow-xs"
+                  ? "bg-[var(--success)] text-white shadow-xs"
                   : "bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white shadow-xs"
               }`}
             >
@@ -882,7 +882,7 @@ export function DynamicActiveRhythm() {
               onClick={() => handleLogAction("other")}
               className={`px-2.5 py-1 rounded-xl text-xs transition-colors border ${
                 logState === "other"
-                  ? "bg-[var(--surface)] border-amber-500 text-amber-500 font-semibold"
+                  ? "bg-[var(--surface)] border-[var(--warning)] text-[var(--warning)] font-semibold"
                   : "bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)]"
               }`}
             >

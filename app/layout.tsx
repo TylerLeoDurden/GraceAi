@@ -55,7 +55,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--text)] selection:bg-[var(--primary)]/20 selection:text-[var(--text)] pb-16 md:pb-0">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('graceai-theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--text-primary)] selection:bg-[var(--accent-subtle)] selection:text-[var(--primary)] pb-16 md:pb-0">
         <ThemeProvider>
           <AuthProvider>
             <Navbar />

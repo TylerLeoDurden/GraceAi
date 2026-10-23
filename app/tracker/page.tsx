@@ -544,9 +544,9 @@ export default function TrackerPage() {
             </div>
           )}
 
-          <div className="flex items-center gap-2 p-3 bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm">
-            <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center font-bold">
-              <Flame className="w-5 h-5 fill-[var(--accent)]" />
+          <div className="flex items-center gap-2.5 p-3 bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-[var(--gold)] text-[var(--gold-text)] flex items-center justify-center font-bold shadow-2xs border border-[var(--gold-text)]/20">
+              <Flame className="w-5 h-5 fill-current" />
             </div>
             <div>
               <div className="text-xs font-bold text-[var(--text)]">
@@ -913,7 +913,7 @@ export default function TrackerPage() {
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Adherence Score
                 </span>
-                <Award className="w-4 h-4 text-[var(--primary)]" />
+                <Award className="w-4 h-4 text-[var(--gold-text)]" />
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="font-serif text-3xl font-bold text-[var(--primary)]">
@@ -1155,7 +1155,7 @@ export default function TrackerPage() {
               </div>
 
               <div className="p-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] flex items-start gap-2.5">
-                <Award className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
+                <Award className="w-4 h-4 text-[var(--gold-text)] shrink-0 mt-0.5" />
                 <p>
                   <strong>Sleep Rhythm:</strong> Weekly sleep average is <strong>{avgSleep} hours/night</strong>.
                   {Number(avgSleep) >= 7.5

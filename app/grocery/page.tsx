@@ -379,12 +379,12 @@ export default function GroceryPage() {
 
         <div className="p-4 sm:p-5 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-xs">
           <div className="text-xs text-[var(--text-muted)] font-medium">Shopping Progress</div>
-          <div className="font-serif text-2xl sm:text-3xl font-bold text-[var(--accent)] mt-1">
+          <div className="font-serif text-2xl sm:text-3xl font-bold text-[var(--primary)] mt-1">
             {progressPercent}%
           </div>
           <div className="w-full bg-[var(--border)] h-1.5 rounded-full mt-2 overflow-hidden">
             <div
-              className="bg-[var(--accent)] h-full transition-all duration-300"
+              className="bg-[var(--primary)] h-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>

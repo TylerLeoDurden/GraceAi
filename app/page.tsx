@@ -278,7 +278,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
               <Link
                 href="/onboarding"
-                className="px-7 py-3.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-medium text-sm transition-all shadow-sm text-center flex items-center justify-center gap-2 group active:scale-95"
+                className="px-7 py-3.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-medium text-sm transition-all shadow-sm text-center flex items-center justify-center gap-2 group active:scale-95"
               >
                 <span>Build Your Weekly Menu</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -1019,7 +1019,7 @@ export default function LandingPage() {
           <div className="pt-2">
             <Link
               href="/onboarding"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium shadow-sm transition-all active:scale-95"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-sm font-medium shadow-sm transition-all active:scale-95"
             >
               <span>Build My Free Menu</span>
               <ArrowRight className="w-4 h-4" />
