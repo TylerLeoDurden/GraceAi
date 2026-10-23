@@ -676,6 +676,12 @@ export function ManualDietPlanModal({
   const [calculatingSlotIdx, setCalculatingSlotIdx] = useState<number | null>(null);
   const [calcNotice, setCalcNotice] = useState<string | null>(null);
 
+  // Groq AI Assistance State
+  const [groqPrompt, setGroqPrompt] = useState("");
+  const [isGroqGenerating, setIsGroqGenerating] = useState(false);
+  const [groqFeedback, setGroqFeedback] = useState<string | null>(null);
+  const [groqSlotGeneratingIdx, setGroqSlotGeneratingIdx] = useState<number | null>(null);
+
   // When selected pattern changes, user can choose to load pattern or keep current
   const activePattern = useMemo(() => {
     return DIETARY_PATTERNS.find((p) => p.id === selectedPatternId) || DIETARY_PATTERNS[0];
@@ -781,6 +787,111 @@ export function ManualDietPlanModal({
     }
   };
 
+  // Groq AI: Generate or personal full dietary plan based on prompt
+  const handleGroqAidPlan = async (overridePrompt?: string) => {
+    const promptToSend = overridePrompt !== undefined ? overridePrompt : groqPrompt;
+    setIsGroqGenerating(true);
+    setCalcNotice(null);
+    setGroqFeedback(null);
+
+    try {
+      const res = await fetch("/api/nutrition/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: promptToSend,
+          patternId: selectedPatternId,
+          patternName: activePattern.name,
+          targetKcal,
+          targetProtein,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.slots && Array.isArray(data.slots) && data.slots.length > 0) {
+        setSlots(
+          data.slots.map((s: any) => ({
+            name: s.name,
+            time: s.time || "8:00 AM",
+            recipeTitle: s.recipeTitle,
+            kcal: Number(s.kcal) || 350,
+            protein: s.protein || "15g",
+            carbs: s.carbs || "45g",
+            fat: s.fat || "12g",
+            origin: s.origin || "Curated",
+            locked: false,
+            completed: false,
+          }))
+        );
+
+        if (data.clinicalSummary) {
+          setGroqFeedback(data.clinicalSummary);
+        }
+        setCalcNotice(
+          `✨ Groq AI crafted a ${data.totalKcal} kcal meal plan tailored to your goals!`
+        );
+      } else {
+        setCalcNotice("Could not generate plan with Groq. Please try again.");
+      }
+    } catch (err) {
+      console.error("Groq plan generation error:", err);
+      setCalcNotice("Connection issue contacting Groq AI.");
+    } finally {
+      setIsGroqGenerating(false);
+      setTimeout(() => setCalcNotice(null), 6000);
+    }
+  };
+
+  // Groq AI: Suggest or adapt a single slot
+  const handleGroqAidSingleSlot = async (idx: number) => {
+    const slot = slots[idx];
+    setGroqSlotGeneratingIdx(idx);
+    setCalcNotice(null);
+
+    try {
+      const res = await fetch("/api/nutrition/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: `Suggest an authentic, nutritious recipe for ${slot.name} adhering to ${activePattern.name}`,
+          patternId: selectedPatternId,
+          patternName: activePattern.name,
+          targetKcal,
+          targetProtein,
+          slotOnly: slot.name,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.slots && data.slots.length > 0) {
+        const found =
+          data.slots.find((s: any) => s.name.toLowerCase() === slot.name.toLowerCase()) ||
+          data.slots[0];
+        setSlots((prev) =>
+          prev.map((s, i) =>
+            i === idx
+              ? {
+                  ...s,
+                  recipeTitle: found.recipeTitle,
+                  kcal: Number(found.kcal) || s.kcal,
+                  protein: found.protein || s.protein,
+                  carbs: found.carbs || s.carbs,
+                  fat: found.fat || s.fat,
+                  origin: found.origin || s.origin,
+                }
+              : s
+          )
+        );
+        setCalcNotice(`✨ Groq suggested: "${found.recipeTitle}" (${found.kcal} kcal)`);
+      }
+    } catch {
+      setCalcNotice("Connection issue with Groq AI.");
+    } finally {
+      setGroqSlotGeneratingIdx(null);
+      setTimeout(() => setCalcNotice(null), 4000);
+    }
+  };
+
   // Choose a suggested dish for a slot
   const handleApplySuggestion = (idx: number, suggestion: { title: string; kcal: number; protein: string; origin: string }) => {
     setSlots((prev) =>
@@ -874,11 +985,111 @@ export function ManualDietPlanModal({
         <div className="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1 text-sm">
           {/* Notice Banner if active */}
           {calcNotice && (
-            <div className="p-3 rounded-2xl bg-[var(--primary-light)]/60 border border-[var(--primary-border)] text-xs text-[var(--primary)] font-semibold flex items-center gap-2 animate-in fade-in">
-              <Sparkles className="w-4 h-4 shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-[var(--primary-light)] border border-[var(--primary-border)] text-xs text-[var(--primary)] font-semibold flex items-center gap-2 animate-in fade-in shadow-2xs">
+              <Sparkles className="w-4 h-4 shrink-0 text-[var(--primary)]" />
               <span>{calcNotice}</span>
             </div>
           )}
+
+          {/* Groq AI Culinary Assistant & Planner */}
+          <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-[var(--surface-elevated)] to-[var(--primary-light)]/20 border border-[var(--primary-border)] shadow-sm space-y-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[var(--primary)] text-white flex items-center justify-center font-bold shadow-xs">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] flex items-center gap-1.5">
+                    <span>Groq AI Culinary & Diet Co-Pilot</span>
+                    <span className="px-1.5 py-0.5 rounded-md bg-[var(--primary)] text-white text-[9px] font-mono tracking-normal">
+                      Groq LLaMA
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                    Ask Groq to design or adapt your manual plan based on specific foods, fitness goals, or dietary restrictions.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Groq Prompt Input Bar */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                value={groqPrompt}
+                onChange={(e) => setGroqPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !isGroqGenerating) {
+                    e.preventDefault();
+                    handleGroqAidPlan();
+                  }
+                }}
+                placeholder="e.g. 'High protein Indian veg with paneer and dal', 'Quick 15-min cooking', 'No onion/garlic Sattvic'..."
+                className="flex-1 p-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-xs sm:text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary)] transition-all font-medium"
+              />
+
+              <button
+                type="button"
+                id="groq-aid-plan-button"
+                onClick={() => handleGroqAidPlan()}
+                disabled={isGroqGenerating}
+                className="px-5 py-3 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 shrink-0 active:scale-95"
+              >
+                {isGroqGenerating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Groq is designing your plan...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    <span>Aid with Groq AI</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Quick Prompt Pills */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[var(--text-muted)] shrink-0">
+                Quick Prompts:
+              </span>
+              {[
+                "High Protein Veg (~110g P)",
+                "Sattvic / Zero Alliums",
+                "Diabetic Low-GI Balance",
+                "Mediterranean Longevity",
+                "Quick 15-min Cooking",
+                "Clean Vegan Plant-Power",
+              ].map((pill) => (
+                <button
+                  key={pill}
+                  type="button"
+                  onClick={() => {
+                    setGroqPrompt(pill);
+                    handleGroqAidPlan(pill);
+                  }}
+                  disabled={isGroqGenerating}
+                  className="px-2.5 py-1 rounded-xl text-[11px] bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)] text-[var(--text-muted)] transition-colors font-medium"
+                >
+                  {pill}
+                </button>
+              ))}
+            </div>
+
+            {/* Groq Clinical Feedback Banner */}
+            {groqFeedback && (
+              <div className="p-3.5 rounded-2xl bg-[var(--surface)] border border-[var(--primary-border)] text-xs text-[var(--text)] flex items-start gap-2.5 animate-in fade-in">
+                <CheckCircle2 className="w-4 h-4 text-[var(--primary)] shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <span className="font-bold text-[var(--primary)] text-[10px] uppercase tracking-wider block">
+                    Groq Clinical Dietitian Insight
+                  </span>
+                  <p className="text-xs leading-relaxed text-[var(--text)]">{groqFeedback}</p>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Section 1: Choose Dietary Philosophy / Pattern */}
           <div className="space-y-3">
@@ -1153,6 +1364,23 @@ export function ManualDietPlanModal({
                         className="flex-1 p-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-xs sm:text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary)] transition-all font-medium"
                       />
 
+                      {/* Ask Groq for this slot */}
+                      <button
+                        type="button"
+                        onClick={() => handleGroqAidSingleSlot(idx)}
+                        disabled={groqSlotGeneratingIdx === idx}
+                        className="px-3 py-2.5 rounded-2xl bg-[var(--surface)] hover:bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)] text-xs font-semibold flex items-center gap-1.5 transition-all text-[var(--text)] shrink-0 shadow-2xs"
+                        title="Ask Groq to suggest or adapt this specific meal slot"
+                      >
+                        {groqSlotGeneratingIdx === idx ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--primary)]" />
+                        ) : (
+                          <Sparkles className="w-3.5 h-3.5 text-[var(--primary)]" />
+                        )}
+                        <span className="hidden sm:inline">Ask Groq</span>
+                      </button>
+
+                      {/* Auto-Calculate Nutrition */}
                       <button
                         type="button"
                         onClick={() => handleAutoCalculateSlot(idx)}
