@@ -74,7 +74,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 9,
       fibreLabel: "High gut satiety",
       fatG: 8,
-      imageUrl: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/moong_khichdi.jpg",
       windowLabel: "Lunch window: 12:30 PM – 2:30 PM",
     },
     Snack: {
@@ -91,7 +91,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 4,
       fibreLabel: "Light gut satiety",
       fatG: 4,
-      imageUrl: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/roasted_makhana_chai.jpg",
       windowLabel: "Snack window: 4:30 PM – 6:00 PM",
     },
     Dinner: {
@@ -127,7 +127,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 10,
       fibreLabel: "Heart-protective fibre",
       fatG: 8,
-      imageUrl: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/steel_cut_oats.jpg",
       windowLabel: "Breakfast window: 7:30 AM – 9:30 AM",
     },
     Lunch: {
@@ -144,7 +144,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 8,
       fibreLabel: "Iron-rich spinach greens",
       fatG: 14,
-      imageUrl: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/palak_paneer.jpg",
       windowLabel: "Lunch window: 12:30 PM – 2:30 PM",
     },
     Snack: {
@@ -161,7 +161,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 5,
       fibreLabel: "Cooling digestion",
       fatG: 3,
-      imageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/crudites.jpg",
       windowLabel: "Snack window: 4:30 PM – 6:00 PM",
     },
     Dinner: {
@@ -178,7 +178,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 7,
       fibreLabel: "Fermented miso flora",
       fatG: 6,
-      imageUrl: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/miso_soup.jpg",
       windowLabel: "Dinner window: 7:30 PM – 9:30 PM",
     },
   },
@@ -197,7 +197,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 6,
       fibreLabel: "Ginger root satiety",
       fatG: 6,
-      imageUrl: "https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/rava_upma.jpg",
       windowLabel: "Breakfast window: 7:30 AM – 9:30 AM",
     },
     Lunch: {
@@ -231,7 +231,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 6,
       fibreLabel: "Enzyme active crunch",
       fatG: 2,
-      imageUrl: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/crudites.jpg",
       windowLabel: "Snack window: 4:30 PM – 6:00 PM",
     },
     Dinner: {
@@ -248,7 +248,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 8,
       fibreLabel: "Sulforaphane rich greens",
       fatG: 12,
-      imageUrl: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/palak_paneer.jpg",
       windowLabel: "Dinner window: 7:30 PM – 9:30 PM",
     },
   },
@@ -267,7 +267,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 6,
       fibreLabel: "Mint & coriander greens",
       fatG: 8,
-      imageUrl: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/besan_chilla.jpg",
       windowLabel: "Breakfast window: 7:30 AM – 9:30 AM",
     },
     Lunch: {
@@ -284,7 +284,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 12,
       fibreLabel: "High satiety legume fibre",
       fatG: 7,
-      imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/rajma.jpg",
       windowLabel: "Lunch window: 12:30 PM – 2:30 PM",
     },
     Snack: {
@@ -301,7 +301,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 4,
       fibreLabel: "Cellular gut nourishment",
       fatG: 12,
-      imageUrl: "https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/walnuts.jpg",
       windowLabel: "Snack window: 4:30 PM – 6:00 PM",
     },
     Dinner: {
@@ -318,7 +318,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 8,
       fibreLabel: "Prebiotic vegetable fibre",
       fatG: 10,
-      imageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/miso_soup.jpg",
       windowLabel: "Dinner window: 7:30 PM – 9:30 PM",
     },
   },
@@ -354,7 +354,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 9,
       fibreLabel: "Glucose balancing fenugreek",
       fatG: 8,
-      imageUrl: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/dal_curry.jpg",
       windowLabel: "Lunch window: 12:30 PM – 2:30 PM",
     },
     Snack: {
@@ -371,7 +371,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 5,
       fibreLabel: "Crunchy gut fibre",
       fatG: 3,
-      imageUrl: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/roasted_makhana_chai.jpg",
       windowLabel: "Snack window: 4:30 PM – 6:00 PM",
     },
     Dinner: {
@@ -388,7 +388,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 11,
       fibreLabel: "Slow-cooked vegetable broth",
       fatG: 6,
-      imageUrl: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/minestrone.jpg",
       windowLabel: "Dinner window: 7:30 PM – 9:30 PM",
     },
   },
@@ -407,7 +407,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 6,
       fibreLabel: "Curry leaf digestive zest",
       fatG: 8,
-      imageUrl: "https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/red_rice_poha.jpg",
       windowLabel: "Breakfast window: 8:00 AM – 10:00 AM",
     },
     Lunch: {
@@ -441,7 +441,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 2,
       fibreLabel: "Roasted cumin gut soother",
       fatG: 2,
-      imageUrl: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/spiced_chaas.jpg",
       windowLabel: "Snack window: 4:30 PM – 6:00 PM",
     },
     Dinner: {
@@ -477,7 +477,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 6,
       fibreLabel: "Roasted tomato lycopene",
       fatG: 7,
-      imageUrl: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/dosa.jpg",
       windowLabel: "Breakfast window: 8:30 AM – 10:30 AM",
     },
     Lunch: {
@@ -511,7 +511,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 2,
       fibreLabel: "Adaptogenic restorative",
       fatG: 5,
-      imageUrl: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/golden_milk.jpg",
       windowLabel: "Snack window: 4:30 PM – 6:00 PM",
     },
     Dinner: {
@@ -528,7 +528,7 @@ export const WEEKLY_RHYTHM_MATRIX: Record<DayOfWeek, Record<MealSlotName, Rhythm
       fibreG: 7,
       fibreLabel: "Raw bean sprout crunch",
       fatG: 9,
-      imageUrl: "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/dishes/pad_thai.jpg",
       windowLabel: "Dinner window: 7:30 PM – 9:30 PM",
     },
   },
@@ -558,6 +558,15 @@ export function DynamicActiveRhythm() {
   const [hasUserOverridden, setHasUserOverridden] = useState(false);
   const [logState, setLogState] = useState<"idle" | "eaten" | "other" | "skipped">("idle");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Dynamic on-the-spot Groq image state
+  const [dynamicImages, setDynamicImages] = useState<
+    Record<string, { url: string; prompt?: string; cached?: boolean }>
+  >({});
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [imageGenerationStatus, setImageGenerationStatus] = useState<string>("");
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Sync to real-time status once mounted if user hasn't overridden
   useEffect(() => {
@@ -604,6 +613,88 @@ export function DynamicActiveRhythm() {
     return dayItem[selectedSlot] || dayItem.Lunch;
   }, [selectedDay, selectedSlot]);
 
+  // Dynamically generate images on the spot using Groq when dish changes
+  useEffect(() => {
+    let isMounted = true;
+    const title = activeDish.recipeTitle;
+    setImageLoaded(false);
+    setImageError(false);
+
+    if (!dynamicImages[title]) {
+      setIsGeneratingImage(true);
+      setImageGenerationStatus("Groq visualizing dish on the spot...");
+
+      fetch("/api/groq/dish-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dishTitle: title,
+          origin: activeDish.origin,
+          mealSlot: activeDish.slot,
+        }),
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          if (isMounted && res.success && res.imageUrl) {
+            setDynamicImages((prev) => ({
+              ...prev,
+              [title]: {
+                url: res.imageUrl,
+                prompt: res.prompt,
+                cached: res.cached,
+              },
+            }));
+          }
+        })
+        .catch((err) => {
+          console.warn("Dynamic image generation error:", err);
+        })
+        .finally(() => {
+          if (isMounted) setIsGeneratingImage(false);
+        });
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeDish.recipeTitle, activeDish.origin, activeDish.slot, dynamicImages]);
+
+  const handleRegenerateOnTheSpot = async () => {
+    const title = activeDish.recipeTitle;
+    setIsGeneratingImage(true);
+    setImageGenerationStatus("Groq crafting new visual on the spot...");
+    try {
+      const res = await fetch("/api/groq/dish-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dishTitle: title,
+          origin: activeDish.origin,
+          mealSlot: activeDish.slot,
+          forceRefresh: true,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.imageUrl) {
+        setDynamicImages((prev) => ({
+          ...prev,
+          [title]: {
+            url: data.imageUrl,
+            prompt: data.prompt,
+            cached: false,
+          },
+        }));
+        setImageLoaded(false);
+        triggerToast(`✨ Groq generated a fresh on-the-spot visual for ${title}!`);
+      }
+    } catch (err) {
+      console.error("Failed to regenerate dish image:", err);
+      triggerToast("Could not regenerate image at this moment.");
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   const isCurrentLive =
     status && status.dayOfWeek === selectedDay && status.activeMealSlot === selectedSlot;
 
@@ -640,6 +731,9 @@ export function DynamicActiveRhythm() {
       triggerToast(`Locked to real-time: ${status.dayOfWeek} ${status.activeMealSlot}`);
     }
   };
+
+  const currentDynamic = dynamicImages[activeDish.recipeTitle]?.url;
+  const displayedImageUrl = !imageError && currentDynamic ? currentDynamic : activeDish.imageUrl;
 
   return (
     <div className="editorial-card rounded-3xl p-6 sm:p-7 space-y-5 relative shadow-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text)]">
@@ -759,13 +853,53 @@ export function DynamicActiveRhythm() {
       <div className="relative h-48 sm:h-52 w-full rounded-2xl overflow-hidden bg-[var(--surface-elevated)] group">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={activeDish.imageUrl}
+          key={displayedImageUrl}
+          src={displayedImageUrl}
           alt={activeDish.recipeTitle}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onLoad={() => setImageLoaded(true)}
+          onError={() => {
+            setImageError(true);
+            setImageLoaded(true);
+          }}
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${
+            imageLoaded ? "opacity-100 blur-0" : "opacity-80 blur-xs"
+          }`}
         />
 
+        {/* Shimmer loading overlay while Groq is generating on the spot */}
+        {isGeneratingImage && (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-4 transition-all z-20">
+            <div className="px-3.5 py-2 rounded-full bg-black/85 border border-emerald-500/50 text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-pulse">
+              <Sparkles className="w-3.5 h-3.5 animate-spin text-amber-300" />
+              <span>{imageGenerationStatus || "Groq visualizing dish on the spot..."}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Groq Dynamic AI Badge & Regenerate Button */}
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10">
+          <div
+            className="px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-md text-[11px] font-semibold text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shadow-md cursor-help"
+            title={dynamicImages[activeDish.recipeTitle]?.prompt || "Generated on the spot by Groq AI"}
+          >
+            <Sparkles className={`w-3 h-3 ${isGeneratingImage ? "animate-spin text-amber-300" : "text-emerald-400"}`} />
+            <span>{isGeneratingImage ? "Groq Generating..." : "Groq AI Visual"}</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleRegenerateOnTheSpot}
+            disabled={isGeneratingImage}
+            title="Generate fresh visual with Groq on the spot"
+            className="px-2 py-1 rounded-full bg-black/65 backdrop-blur-md hover:bg-black/90 text-white/90 hover:text-white border border-white/25 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 text-[10px] font-semibold flex items-center gap-1 shadow-md"
+          >
+            <RotateCcw className={`w-3 h-3 ${isGeneratingImage ? "animate-spin" : ""}`} />
+            <span>Regenerate</span>
+          </button>
+        </div>
+
         {/* Prep & kcal pill */}
-        <div className="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-[var(--surface)]/90 backdrop-blur-md text-xs font-semibold text-[var(--text)] flex items-center gap-2 shadow-lg border border-[var(--border)]">
+        <div className="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-[var(--surface)]/90 backdrop-blur-md text-xs font-semibold text-[var(--text)] flex items-center gap-2 shadow-lg border border-[var(--border)] z-10">
           <Clock className="w-3.5 h-3.5 text-[var(--primary)]" />
           <span>{activeDish.prepTime}</span>
           <span>•</span>
@@ -777,7 +911,7 @@ export function DynamicActiveRhythm() {
           href={`/grace?mode=chef&prompt=${encodeURIComponent(
             `Please give me the authentic, healthy step-by-step recipe and clinical nutrition notes for: ${activeDish.recipeTitle} (${selectedDay} ${selectedSlot})`
           )}`}
-          className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-[var(--surface)]/90 backdrop-blur-md hover:bg-[var(--primary)] hover:text-white text-xs font-semibold text-[var(--text)] flex items-center gap-1.5 transition-colors shadow-lg border border-[var(--border)]"
+          className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-[var(--surface)]/90 backdrop-blur-md hover:bg-[var(--primary)] hover:text-white text-xs font-semibold text-[var(--text)] flex items-center gap-1.5 transition-colors shadow-lg border border-[var(--border)] z-10"
         >
           <ChefHat className="w-3.5 h-3.5" />
           <span>Cook This</span>

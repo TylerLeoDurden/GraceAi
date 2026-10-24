@@ -42,7 +42,7 @@ const SAMPLE_RECIPES = [
     kcal: 380,
     protein: "14g",
     tags: ["Gentle Digestion", "Gut Healing", "Gluten Free"],
-    image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=700&q=80",
+    image: "/images/dishes/moong_khichdi.jpg",
     desc: "Unpolished brown rice and yellow moong simmered with freshly tempered cumin, curry leaves, and ginger.",
   },
   {
@@ -78,7 +78,7 @@ const SAMPLE_RECIPES = [
     kcal: 210,
     protein: "16g",
     tags: ["Fermented", "Light Supper", "Vegan"],
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=80",
+    image: "/images/dishes/miso_soup.jpg",
     desc: "Silken tofu simmered in fermented dashi-miso broth with crisp baby bok choy and toasted sesame seeds.",
   },
   {
@@ -90,7 +90,7 @@ const SAMPLE_RECIPES = [
     kcal: 360,
     protein: "19g",
     tags: ["No Onion / Garlic", "High Protein", "Sattvic"],
-    image: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=700&q=80",
+    image: "/images/dishes/palak_paneer.jpg",
     desc: "Prepared without root vegetables. Fresh fenugreek greens and soft paneer in spiced cashew-yogurt gravy.",
   },
   {
@@ -102,7 +102,7 @@ const SAMPLE_RECIPES = [
     kcal: 390,
     protein: "15g",
     tags: ["High Fiber", "Plant Protein"],
-    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=700&q=80",
+    image: "/images/dishes/hummus.jpg",
     desc: "Stone-ground sesame tahini, boiled chickpeas, za'atar herbs, pomegranate seeds, and fresh cucumbers.",
   },
 ];

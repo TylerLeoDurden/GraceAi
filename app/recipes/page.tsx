@@ -50,7 +50,7 @@ const RECIPES_DATA: Recipe[] = [
     proteinG: 14,
     carbsG: 58,
     fatG: 9,
-    image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80",
+    image: "/images/dishes/moong_khichdi.jpg",
     description: "Gentle unpolished brown rice and yellow lentils tempered with cumin, curry leaves, and unrefined ghee.",
     ingredients: [
       { item: "Yellow Moong Dal", amount: 100, unit: "g" },
@@ -112,7 +112,7 @@ const RECIPES_DATA: Recipe[] = [
     proteinG: 19,
     carbsG: 14,
     fatG: 22,
-    image: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=600&q=80",
+    image: "/images/dishes/palak_paneer.jpg",
     description: "Prepared without onion, garlic, or root vegetables. Fresh fenugreek and soft paneer in cashew yogurt sauce.",
     ingredients: [
       { item: "Malai Paneer cubes", amount: 250, unit: "g" },
@@ -142,7 +142,7 @@ const RECIPES_DATA: Recipe[] = [
     proteinG: 16,
     carbsG: 14,
     fatG: 7,
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80",
+    image: "/images/dishes/miso_soup.jpg",
     description: "Warm fermented white miso soup with organic cubed tofu, baby bok choy, and toasted sesame.",
     ingredients: [
       { item: "Silken Organic Tofu", amount: 200, unit: "g" },
@@ -202,7 +202,7 @@ const RECIPES_DATA: Recipe[] = [
     proteinG: 15,
     carbsG: 42,
     fatG: 18,
-    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+    image: "/images/dishes/hummus.jpg",
     description: "Creamy chickpeas whipped with sesame tahini, za'atar, lemon juice, and pomegranate arils.",
     ingredients: [
       { item: "Cooked Chickpeas", amount: 250, unit: "g" },
